@@ -16,7 +16,7 @@ require_once "./lib/haggistwo.combo.php";
  * Defines application features from the specific context.
  */
 class FeatureContext extends PHPUnit_Framework_TestCase implements Context, SnippetAcceptingContext
-{	 
+{  
   private static $analyst;
   private $cards = array();
   private $analysis = array();
@@ -36,7 +36,7 @@ class FeatureContext extends PHPUnit_Framework_TestCase implements Context, Snip
    */
   public function __construct()
   {
-		
+    
   }
 
   /**
@@ -53,8 +53,8 @@ class FeatureContext extends PHPUnit_Framework_TestCase implements Context, Snip
   public function a_card_that_does_not_belong_to_me()
   {
     $not_my_card = $this->create_card_(1,2);
-  	$not_my_card['location_arg'] = 2; // I am at location_arg == 1
-  	$this->cards = array($not_my_card);
+    $not_my_card['location_arg'] = 2; // I am at location_arg == 1
+    $this->cards = array($not_my_card);
   }
 
   /**
@@ -78,7 +78,7 @@ class FeatureContext extends PHPUnit_Framework_TestCase implements Context, Snip
   {
     return array('id'=>1, 'location'=>'hand', 'location_arg'=>1, 'type'=>$suit, 'type_arg'=>$rank);
   } 
-		
+    
   /**
   * @When the analyzer is run
   */
@@ -92,7 +92,7 @@ class FeatureContext extends PHPUnit_Framework_TestCase implements Context, Snip
     { 
       $this->analysis = $error; 
     }
-  }	
+  } 
 
   /**
   * @Then there should be :number_of_valid_combos combo
@@ -102,7 +102,7 @@ class FeatureContext extends PHPUnit_Framework_TestCase implements Context, Snip
     $this->assertEquals(count($this->analysis), $number_of_valid_combos);
     $this->combo = array_shift($this->analysis);
     array_unshift($this->analysis, $this->combo);
-  }	
+  } 
 
   /**
   * @Then the combo type should be :type
