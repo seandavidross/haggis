@@ -1,0 +1,55 @@
+/* Testlayout stylesheet */
+
+@import url(../../../css/csslayer.css);
+
+
+.combo {
+    margin: 10px;
+}
+
+.ha_board {
+    clear: both;
+}
+
+#betpanel {
+  
+}
+
+.bet {
+    display: none;
+}
+
+.wild_card, .card_point_icon {
+    display: none;
+    background-image: url('img/cards.png');
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: 4px;
+}
+.wild_card_13 {    background-position: 20px 20px;  }
+.wild_card_12 {    background-position: 40px 20px;  }
+.wild_card_11 {    background-position: 60px 20px;  }
+.card_point_icon {   
+    display: inline-block;
+     background-position: 20px 40px;  
+}
+
+.reordercards {
+    font-size: 70%;
+    position: relative;
+    top: -1px;
+    margin-left: 30px;
+}
+
+#scoreRecapDlgContent table {
+    border: medium solid #000000;
+    border-collapse: collapse;
+}
+#scoreRecapDlgContent td, #scoreRecapDlgContent th {
+   border: thin solid #000000;
+   border-collapse: collapse;
+   text-align: center;
+   padding: 5px;
+   font-size: 90%;
+}

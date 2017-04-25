@@ -1,0 +1,9 @@
+default:
+  autoload:
+    '': ./features/bootstrap
+  suites:
+    default:
+      paths:
+        features: features
+        bootstrap: features/bootstrap
+
