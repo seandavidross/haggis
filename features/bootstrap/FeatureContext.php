@@ -7,20 +7,20 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
 
-// require 'PHPUnit/Autoload.php';
-// require_once 'PHPUnit/Framework/Assert/Functions.php';
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Assert\Functions;
 
 require_once "./lib/haggistwo.combo.php";
 
 /**
  * Defines application features from the specific context.
  */
-class FeatureContext extends PHPUnit_Framework_TestCase implements Context, SnippetAcceptingContext
-{  
+class FeatureContext extends TestCase implements Context, SnippetAcceptingContext
+{
   private static $analyst;
   private $cards = array();
   private $analysis = array();
-  private $combo = array(); 
+  private $combo = array();
   // "type" => set/sequence/bomb,
   // "value" => value of the combo (the higher, the better)
   // "serienbr" => number of different serie
@@ -36,7 +36,7 @@ class FeatureContext extends PHPUnit_Framework_TestCase implements Context, Snip
    */
   public function __construct()
   {
-    
+
   }
 
   /**
@@ -74,25 +74,25 @@ class FeatureContext extends PHPUnit_Framework_TestCase implements Context, Snip
     static::$analyst = new Combo();
   }
 
-  private function create_card_($suit, $rank) 
+  private function create_card_($suit, $rank)
   {
     return array('id'=>1, 'location'=>'hand', 'location_arg'=>1, 'type'=>$suit, 'type_arg'=>$rank);
-  } 
-    
+  }
+
   /**
   * @When the analyzer is run
   */
   public function the_analyzer_is_run()
   {
-    try 
-    { 
-      $this->analysis = static::$analyst->analyzeCombo( $this->cards ); 
-    } 
-    catch( \Exception $error ) 
-    { 
-      $this->analysis = $error; 
+    try
+    {
+      $this->analysis = static::$analyst->analyzeCombo( $this->cards );
     }
-  } 
+    catch( \Exception $error )
+    {
+      $this->analysis = $error;
+    }
+  }
 
   /**
   * @Then there should be :number_of_valid_combos combo
@@ -102,12 +102,12 @@ class FeatureContext extends PHPUnit_Framework_TestCase implements Context, Snip
     $this->assertEquals(count($this->analysis), $number_of_valid_combos);
     $this->combo = array_shift($this->analysis);
     array_unshift($this->analysis, $this->combo);
-  } 
+  }
 
   /**
   * @Then the combo type should be :type
   */
-  public function the_combo_type_should_be( $type ) 
+  public function the_combo_type_should_be( $type )
   {
     $type = ($type == 'null') ? null : $type;
     $combo_type = (count($this->analysis) > 1) ? 'vague' : $this->combo['type'];
@@ -156,14 +156,14 @@ class FeatureContext extends PHPUnit_Framework_TestCase implements Context, Snip
   */
   public function the_analyzer_looks_for_bombs()
   {
-    $this->analysis = static::$analyst->checkBombsAmongCards( $this->cards ); 
+    $this->analysis = static::$analyst->checkBombsAmongCards( $this->cards );
   }
 
   /**
   * @Then a rainbow bomb will be found is :rainbow
   */
   public function a_rainbow_bomb_will_be_found_is($rainbow)
-  {   
+  {
     $found = $this->analysis['rainbow'] ? 'true':'false';
     $this->assertEquals($found, $rainbow);
   }
