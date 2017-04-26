@@ -71,7 +71,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   */
   public function we_have_a_combo_analyzer()
   {
-    static::$analyst = new Haggis\Cards\Combo(null);
+    static::$analyst = new Haggis\Cards\Combo(array());
   }
 
   private function create_card_($suit, $rank)

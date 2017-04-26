@@ -4,6 +4,7 @@ namespace Haggis\Cards {
   require_once "./lib/haggistwo.exceptions.php";
   use Haggis\Exception\ImpossibleCombination as ImpossibleCombination;
   use Haggis\Exception\CardNotInHand as CardNotInHand;
+  use Haggis\Exception\NullCombination as NullCombination;
 
   class Attributes 
   {
@@ -26,6 +27,8 @@ namespace Haggis\Cards {
 
     function __construct($cards)
     {
+      if ($cards == null) throw new NullCombination("A combo's cards cannot be null.");
+
       $this->cards_ = $cards;
     }
 
