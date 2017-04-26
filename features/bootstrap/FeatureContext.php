@@ -10,7 +10,7 @@ use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Assert\Functions;
 
-require_once "./lib/haggistwo.combo.php";
+require_once "./lib/haggistwo.cards.php";
 
 /**
  * Defines application features from the specific context.
@@ -71,7 +71,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   */
   public function we_have_a_combo_analyzer()
   {
-    static::$analyst = new Combo();
+    static::$analyst = new Haggis\Cards\Combo(null);
   }
 
   private function create_card_($suit, $rank)
@@ -86,7 +86,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   {
     try
     {
-      $this->analysis = static::$analyst->analyzeCombo( $this->cards );
+      $this->analysis = static::$analyst->get_possible_combinations($this->cards);
     }
     catch( \Exception $error )
     {
