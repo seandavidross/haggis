@@ -1,26 +1,28 @@
 <?php
 
-class feException extends Exception {}
+class feException 
+  extends Exception {}
   
-class Config {
-  public static $SUITS = array(0,1,2,3,4,'wild');
-  public static $RANKS = array(2,3,4,5,6,7,8,9,10,11,12,13);
-  //public static $MAX_HAND_SIZE = 17; // 14 in hand plus 3 wild cards on table
-  public static $POINT_CARDS = array(3,5,7,9);
-  public static $WILD_CARDS  = array('JACK'=>11, 'QUEEN'=>12, 'KING'=>13);
+
+class Config 
+{
+  const SUITS = 
+    array(0, 1, 2, 3, 4, 'wild');
+
+  const RANKS = 
+    array(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+
+  const POINT_CARDS = 
+    array(3, 5, 7, 9);
+  
+  const WILD_CARDS = 
+    array('JACK' => 11, 'QUEEN' => 12, 'KING' => 13);
+  //const MAX_HAND_SIZE = 17; // 14 in hand plus 3 wild cards on table
 }
 
-class Combo {
-  private $lowest_rank        = 0;
-  private $cards_by_suit      = array(); 
-  private $cards_by_rank      = array(); 
-  private $wild_cards_ids     = array();
-  private $number_of_suits    = 0;
-  private $number_of_cards    = 0;
-  private $default_display    = array();
-  private $card_display_order = array();
-  private $number_of_wilds_available = 0;   
 
+class Combo 
+{
   // Analyse played combo
   // Return an array of possible combos = object of this kind:
   //  array( "type" => set/sequence/bomb,
@@ -29,7 +31,8 @@ class Combo {
   //         "nbr" => number of cards
   //         "display" => cards ids in right order for display )
   //  ... or null if this is an invalid combo
-  function analyzeCombo( $cards ) {
+  function analyzeCombo($cards) 
+  {
     $this->prepare_to_analyze($cards);
     list($highest_rank, $lowest_rank) = $this->find_the_highest_and_the_lowest_ranks();
     
@@ -45,7 +48,7 @@ class Combo {
       // a sequence is two or more consecutively ranked sets, e.g., 6-6-6-7-7-7,
       // and this particular sequence would have a length of 2 (consectuve ranks), 
       // a width of 3 (size of sets), and a rank of 7 (highest non-wild rank)
-      for($sequence_width = 1; $sequence_width < count(Config::$SUITS); $sequence_width++) {
+      for($sequence_width = 1; $sequence_width < count(Config::SUITS); $sequence_width++) {
         $sequence_length = floor( $this->number_of_cards / $sequence_width );
         $sequence_rank   = $lowest_rank + $sequence_length - 1;
         list($L,$W,$R)   = array($sequence_length, $sequence_width, $sequence_rank);
@@ -74,9 +77,12 @@ class Combo {
 // the class that will call #analyzeCombo, this class shouldn't care
 // about who has the cards or where they came from, it only needs to
 // know if the cards form valid Haggis combinations or not...
-  private function combo_should_belong_to_you($cards) {
+  private function combo_should_belong_to_you($cards) 
+  {
     foreach( $cards as $card ) 
+    {
       $this->card_should_belong_to_you($card);
+    }
   }
 
   private function card_should_belong_to_you($card) {
@@ -95,8 +101,8 @@ class Combo {
     $rank_of = function($c){ return $c['type_arg']; };
   
     // Build a "card grid" (serie-value and value-serie)
-    $this->cards_by_suit  = array_fill_keys( Config::$SUITS, array() );
-    $this->cards_by_rank  = array_fill_keys( Config::$RANKS, array() );
+    $this->cards_by_suit  = array_fill_keys( Config::SUITS, array() );
+    $this->cards_by_rank  = array_fill_keys( Config::RANKS, array() );
     $this->wild_cards_ids = array();
   
     foreach( $cards as $card ) {
@@ -143,7 +149,7 @@ class Combo {
   }
   
   private function may_be_a_wild_singleton_or_a_wild_bomb() {
-    extract(Config::$WILD_CARDS); // either combo has only wild cards or...
+    extract(Config::WILD_CARDS); // either combo has only wild cards or...
     $JACK  = isset( $this->cards_by_suit['wild'][$JACK] )  ? $JACK  : 0;
     $QUEEN = isset( $this->cards_by_suit['wild'][$QUEEN] ) ? $QUEEN : 0;
     $KING  = isset( $this->cards_by_suit['wild'][$KING] )  ? $KING  : 0;  
@@ -254,7 +260,7 @@ class Combo {
 
 
     $this->group_cards_by_suit_and_by_rank($cards); // we can use this to gather up all of the point cards then
-    list($threes, $fives, $sevens, $nines) = array_map("array_keys", $pluck( Config::$POINT_CARDS, $this->cards_by_rank ));
+    list($threes, $fives, $sevens, $nines) = array_map("array_keys", $pluck( Config::POINT_CARDS, $this->cards_by_rank ));
     $point_card_combos = $zip($threes, $zip($fives, $zip($sevens, $nines))); // get all the combinations of the 4 point cards
     $maybe_bombs = array_map("array_unique", $point_card_combos);            // and finally squeeze out any duplicate suits
     
@@ -266,6 +272,16 @@ class Combo {
                  'suited' =>$has_one_of_each_point_card_in_this_many_suits(1));
   
   }
+
+  private $lowest_rank = 0;
+  private $cards_by_suit = array(); 
+  private $cards_by_rank = array(); 
+  private $wild_cards_ids = array();
+  private $number_of_suits = 0;
+  private $number_of_cards = 0;
+  private $default_display = array();
+  private $card_display_order = array();
+  private $number_of_wilds_available = 0;   
   
 }// end class Combo
 

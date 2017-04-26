@@ -17,17 +17,17 @@ require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
 class HaggisTwo extends Table
 {
-	function HaggisTwo( )
-	{
-		parent::__construct();
-		self::initGameStateLabels( array(  "game_duration" => 100,
-		                                   "dealer" => 11, "lastTrickWinner" => 12, "lastRoundWinner" => 13,
-		                                   "combotype" => 14, "combonbr" => 15, "comboserienbr" => 16, "combovalue" => 17,
-		                                   "lastComboPlayer" => 18, "nbrPass" => 19, "nbrPassToWin" => 20 ) );
+  function HaggisTwo( )
+  {
+    parent::__construct();
+    self::initGameStateLabels( array(  "game_duration" => 100,
+                                       "dealer" => 11, "lastTrickWinner" => 12, "lastRoundWinner" => 13,
+                                       "combotype" => 14, "combonbr" => 15, "comboserienbr" => 16, "combovalue" => 17,
+                                       "lastComboPlayer" => 18, "nbrPass" => 19, "nbrPassToWin" => 20 ) );
 
-		$this->cards = self::getNew( "module.common.deck" );
-		$this->cards->init( "card" );
-	}
+    $this->cards = self::getNew( "module.common.deck" );
+    $this->cards->init( "card" );
+  }
 
     function getGameName() {
         return "haggistwo";
