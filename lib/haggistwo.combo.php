@@ -3,8 +3,8 @@
 class feException 
   extends Exception {}
   
-
-class Config 
+// TODO: Need a better name for this class...
+class Attributes 
 {
   const SUITS = 
     array(0, 1, 2, 3, 4, 'wild');
@@ -48,7 +48,7 @@ class Combo
       // a sequence is two or more consecutively ranked sets, e.g., 6-6-6-7-7-7,
       // and this particular sequence would have a length of 2 (consectuve ranks), 
       // a width of 3 (size of sets), and a rank of 7 (highest non-wild rank)
-      for($sequence_width = 1; $sequence_width < count(Config::SUITS); $sequence_width++) {
+      for($sequence_width = 1; $sequence_width < count(Attributes::SUITS); $sequence_width++) {
         $sequence_length = floor( $this->number_of_cards / $sequence_width );
         $sequence_rank   = $lowest_rank + $sequence_length - 1;
         list($L,$W,$R)   = array($sequence_length, $sequence_width, $sequence_rank);
@@ -63,7 +63,7 @@ class Combo
     
   private function prepare_to_analyze($cards) {
     // $this->combo_should_not_be_empty( $cards );
-    // $this->combo_should_not_be_bigger_than(Config::MAX_HAND_SIZE);
+    // $this->combo_should_not_be_bigger_than(Attributes::MAX_HAND_SIZE);
     $this->combo_should_belong_to_you($cards);
     
     $this->group_cards_by_suit_and_by_rank($cards);
@@ -101,8 +101,8 @@ class Combo
     $rank_of = function($c){ return $c['type_arg']; };
   
     // Build a "card grid" (serie-value and value-serie)
-    $this->cards_by_suit  = array_fill_keys( Config::SUITS, array() );
-    $this->cards_by_rank  = array_fill_keys( Config::RANKS, array() );
+    $this->cards_by_suit  = array_fill_keys( Attributes::SUITS, array() );
+    $this->cards_by_rank  = array_fill_keys( Attributes::RANKS, array() );
     $this->wild_cards_ids = array();
   
     foreach( $cards as $card ) {
@@ -149,7 +149,7 @@ class Combo
   }
   
   private function may_be_a_wild_singleton_or_a_wild_bomb() {
-    extract(Config::WILD_CARDS); // either combo has only wild cards or...
+    extract(Attributes::WILD_CARDS); // either combo has only wild cards or...
     $JACK  = isset( $this->cards_by_suit['wild'][$JACK] )  ? $JACK  : 0;
     $QUEEN = isset( $this->cards_by_suit['wild'][$QUEEN] ) ? $QUEEN : 0;
     $KING  = isset( $this->cards_by_suit['wild'][$KING] )  ? $KING  : 0;  
@@ -260,7 +260,7 @@ class Combo
 
 
     $this->group_cards_by_suit_and_by_rank($cards); // we can use this to gather up all of the point cards then
-    list($threes, $fives, $sevens, $nines) = array_map("array_keys", $pluck( Config::POINT_CARDS, $this->cards_by_rank ));
+    list($threes, $fives, $sevens, $nines) = array_map("array_keys", $pluck( Attributes::POINT_CARDS, $this->cards_by_rank ));
     $point_card_combos = $zip($threes, $zip($fives, $zip($sevens, $nines))); // get all the combinations of the 4 point cards
     $maybe_bombs = array_map("array_unique", $point_card_combos);            // and finally squeeze out any duplicate suits
     
