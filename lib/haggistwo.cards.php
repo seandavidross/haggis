@@ -1,33 +1,187 @@
 <?php
+namespace Haggis\Cards\Attributes
+{
+  const SUITS =
+    array('RED' => 0
+         ,'ORANGE' => 1
+         ,'YELLOW' => 2
+         ,'GREEN' => 3
+         ,'BLUE' => 4
+         ,'WILD' => 'wild'
+         );
+
+
+  const RANKS =
+    array('2' => 2
+         ,'3' => 3
+         ,'4' => 4
+         ,'5' => 5
+         ,'6' => 6
+         ,'7' => 7
+         ,'8' => 8
+         ,'9' => 9
+         ,'T' => 10
+         ,'J' => 11
+         ,'Q' => 12
+         ,'K' => 13
+         );
+
+
+  const POINT_CARDS =
+    array(3, 5, 7, 9);
+
+
+  const POINTS =
+    array(2 => 0
+         ,3 => 1
+         ,4 => 0
+         ,5 => 1
+         ,6 => 0
+         ,7 => 1
+         ,8 => 0
+         ,9 => 1
+         ,10 => 0 // T
+         ,11 => 2 // J
+         ,12 => 3 // Q
+         ,13 => 5 // K
+         );
+
+
+  const WILD_CARDS =
+    array('JACK' => 11, 'QUEEN' => 12, 'KING' => 13);
+
+  // REFACTOR: these don't belong here...
+  const OWNERS =
+    array('DEALER' => 0
+         ,'FOREHAND' => 1
+         ,'MIDDLEHAND' => 2
+         ,'HAGGIS' => 3
+         );
+
+
+  const LOCATIONS =
+    array('HAND' => 0
+         ,'PILE' => 1
+         ,'TRICKS' => 2
+         ,'HAGGIS' => 3
+         );
+}
+
+
 namespace Haggis\Cards {
 
   require_once "./lib/haggistwo.exceptions.php";
   use Haggis\Exception\ImpossibleCombination as ImpossibleCombination;
   use Haggis\Exception\CardNotInHand as CardNotInHand;
   use Haggis\Exception\NullCombination as NullCombination;
+  use Haggis\Exception\EmptyCombination as EmptyCombination;
 
-  class Attributes
+
+  class Card 
   {
-    const SUITS =
-      array(0, 1, 2, 3, 4, 'wild');
+    function __construct($suit, $rank, $options = array()) 
+    {
+      $this->suit_ = $suit;
 
-    const RANKS =
-      array(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+      $this->rank_ = $rank;
 
-    const POINT_CARDS =
-      array(3, 5, 7, 9);
+      $this->owner_ = 
+        isset($options['owner']) 
+          ? $options['owner']
+          : Attributes\OWNERS['FOREHAND'];
 
-    const WILD_CARDS =
-      array('JACK' => 11, 'QUEEN' => 12, 'KING' => 13);
+      $this->location_ = 
+        isset($options['location'])
+          ? $options['location'] 
+          : Attributes\LOCATIONS['HAND'];
+      
+      $this->position_ = 
+        isset($options['position'])
+          ? $options['position'] 
+          : 0;
+    }
+
+
+    function suit()
+    {
+      return $this->suit_;
+    }
+
+
+    function rank()
+    {
+      return $this->rank_;
+    }
+
+
+    function owner()
+    {
+      return $this->owner_;
+    }
+
+
+    function change_owner($new_owner)
+    {
+      $this->owner_ = $new_owner;
+    }
+
+
+    function location()
+    {
+      return $this->location_;
+    }
+
+
+    function change_location($new_location)
+    {
+      $this->location_ = $new_location;
+    }
+
+
+    function position()
+    {
+      return $this->position_;
+    }
+
+
+    function change_position($new_position)
+    {
+      $this->position_ = $new_position;
+    }
+
+
+    function to_a() 
+    {
+      return 
+        array('type' => $this->suit_
+             ,'type_arg' => $this->rank_
+             ,'id' => $this->owner_
+             ,'location' => $this->location_
+             ,'location_arg' => $this->position_
+             );
+    }
+
+
+    private $suit_;
+    private $rank_;
+    // REFACTOR? Not sure cards should know the following...
+    private $owner_;    // FOREHAND|MIDDLEHAND|REARHAND(dealer)
+    private $location_; // HAND|PILE|TRICKS|HAGGIS 
+    private $position_; // 0-16 (14-16 are face cards)
   }
+
 
   // REFACTOR: rename to Combination
   class Combo
   {
 
-    function __construct($cards)
-    {
-      if ($cards == null) throw new NullCombination("A combo's cards cannot be null.");
+    function __construct(array $cards)
+    { 
+      if (empty($cards))
+        throw new EmptyCombination("A combo cannot contain zero cards");
+      
+      if (in_array(null, $cards)) 
+        throw new NullCombination("A combo's cards cannot be null.");
 
       $this->cards_ = $cards;
     }

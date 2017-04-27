@@ -9,6 +9,8 @@ namespace Haggis\Exception
   class CardNotInHand extends Exception {}
 
   class NullCombination extends Exception {}
+
+  class EmptyCombination extends Exception {}
 }
 
 ?>
