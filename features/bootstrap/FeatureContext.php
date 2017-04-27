@@ -14,12 +14,12 @@ require_once "./lib/haggistwo.cards.php";
 
 use Haggis\Cards\Card as Card;
 use Haggis\Cards\Combo as Combo;
-use Haggis\Cards\Attributes;
+use Haggis\Cards\Attributes as Attributes;
 use Haggis\Exception\NullCombination as NullCombination;
 use Haggis\Exception\EmptyCombination as EmptyCombination;
 
-const SUITS = Haggis\Cards\Attributes\SUITS;
-const RANKS = Haggis\Cards\Attributes\RANKS;
+const SUITS = Attributes\SUITS;
+const RANKS = Attributes\RANKS;
 
 global $RED_FIVE;
 $RED_FIVE = new Card( SUITS['RED'], RANKS['5'] );
