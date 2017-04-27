@@ -77,27 +77,27 @@ namespace Haggis\Cards {
   use Haggis\Exception\EmptyCombination as EmptyCombination;
 
 
-  class Card 
+  class Card
   {
-    function __construct($suit, $rank, $options = array()) 
+    function __construct($suit, $rank, $options = array())
     {
       $this->suit_ = $suit;
 
       $this->rank_ = $rank;
 
-      $this->owner_ = 
-        isset($options['owner']) 
+      $this->owner_ =
+        isset($options['owner'])
           ? $options['owner']
           : Attributes\OWNERS['FOREHAND'];
 
-      $this->location_ = 
+      $this->location_ =
         isset($options['location'])
-          ? $options['location'] 
+          ? $options['location']
           : Attributes\LOCATIONS['HAND'];
-      
-      $this->position_ = 
+
+      $this->position_ =
         isset($options['position'])
-          ? $options['position'] 
+          ? $options['position']
           : 0;
     }
 
@@ -150,9 +150,9 @@ namespace Haggis\Cards {
     }
 
 
-    function to_a() 
+    function to_a()
     {
-      return 
+      return
         array('type' => $this->suit_
              ,'type_arg' => $this->rank_
              ,'id' => $this->owner_
@@ -166,7 +166,7 @@ namespace Haggis\Cards {
     private $rank_;
     // REFACTOR? Not sure cards should know the following...
     private $owner_;    // FOREHAND|MIDDLEHAND|REARHAND(dealer)
-    private $location_; // HAND|PILE|TRICKS|HAGGIS 
+    private $location_; // HAND|PILE|TRICKS|HAGGIS
     private $position_; // 0-16 (14-16 are face cards)
   }
 
@@ -176,11 +176,11 @@ namespace Haggis\Cards {
   {
 
     function __construct(array $cards)
-    { 
+    {
       if (empty($cards))
         throw new EmptyCombination("A combo cannot contain zero cards");
-      
-      if (in_array(null, $cards)) 
+
+      if (in_array(null, $cards))
         throw new NullCombination("A combo's cards cannot be null.");
 
       $this->cards_ = $cards;
@@ -205,7 +205,7 @@ namespace Haggis\Cards {
       {
         $possible_combinations[] = $this->may_be_a_wild_singleton_or_a_wild_bomb();
       }
-      else if( $this->could_possibly_be_a_rainbow_or_a_suited_bomb() ) 
+      else if( $this->could_possibly_be_a_rainbow_or_a_suited_bomb() )
       {
         $possible_combinations[] = $this->may_be_a_rainbow_or_a_suited_bomb();
       }
@@ -219,7 +219,7 @@ namespace Haggis\Cards {
         // a sequence is two or more consecutively ranked sets, e.g., 6-6-6-7-7-7,
         // and this particular sequence would have a length of 2 (consectuve ranks),
         // a width of 3 (size of sets), and a rank of 7 (highest non-wild rank)
-        for($sequence_width = 1; $sequence_width < count(Attributes::SUITS); $sequence_width++)
+        for($sequence_width = 1; $sequence_width < count(Attributes\SUITS); $sequence_width++)
         {
           $sequence_length = floor( $this->number_of_cards / $sequence_width );
           $sequence_rank   = $lowest_rank + $sequence_length - 1;
@@ -235,7 +235,7 @@ namespace Haggis\Cards {
 
     private function prepare_to_analyze($cards) {
       // $this->combo_should_not_be_empty( $cards );
-      // $this->combo_should_not_be_bigger_than(Attributes::MAX_HAND_SIZE);
+      // $this->combo_should_not_be_bigger_than(Attributes\MAX_HAND_SIZE);
       $this->combo_should_belong_to_you($cards);
 
       $this->group_cards_by_suit_and_by_rank($cards);
@@ -273,8 +273,8 @@ namespace Haggis\Cards {
       $rank_of = function($c){ return $c['type_arg']; };
 
       // Build a "card grid" (serie-value and value-serie)
-      $this->cards_by_suit  = array_fill_keys( Attributes::SUITS, array() );
-      $this->cards_by_rank  = array_fill_keys( Attributes::RANKS, array() );
+      $this->cards_by_suit  = array_fill_keys( Attributes\SUITS, array() );
+      $this->cards_by_rank  = array_fill_keys( Attributes\RANKS, array() );
       $this->wild_cards_ids = array();
 
       foreach( $cards as $card ) {
@@ -321,7 +321,7 @@ namespace Haggis\Cards {
     }
 
     private function may_be_a_wild_singleton_or_a_wild_bomb() {
-      extract(Attributes::WILD_CARDS); // either combo has only wild cards or...
+      extract(Attributes\WILD_CARDS); // either combo has only wild cards or...
       $JACK  = isset( $this->cards_by_suit['wild'][$JACK] )  ? $JACK  : 0;
       $QUEEN = isset( $this->cards_by_suit['wild'][$QUEEN] ) ? $QUEEN : 0;
       $KING  = isset( $this->cards_by_suit['wild'][$KING] )  ? $KING  : 0;
@@ -432,7 +432,7 @@ namespace Haggis\Cards {
 
 
       $this->group_cards_by_suit_and_by_rank($cards); // we can use this to gather up all of the point cards then
-      list($threes, $fives, $sevens, $nines) = array_map("array_keys", $pluck( Attributes::POINT_CARDS, $this->cards_by_rank ));
+      list($threes, $fives, $sevens, $nines) = array_map("array_keys", $pluck( Attributes\POINT_CARDS, $this->cards_by_rank ));
       $point_card_combos = $zip($threes, $zip($fives, $zip($sevens, $nines))); // get all the combinations of the 4 point cards
       $maybe_bombs = array_map("array_unique", $point_card_combos);            // and finally squeeze out any duplicate suits
 

@@ -12,6 +12,18 @@ use PHPUnit\Framework\Assert\Functions;
 
 require_once "./lib/haggistwo.cards.php";
 
+use Haggis\Cards\Card as Card;
+use Haggis\Cards\Combo as Combo;
+use Haggis\Cards\Attributes;
+use Haggis\Exception\NullCombination as NullCombination;
+use Haggis\Exception\EmptyCombination as EmptyCombination;
+
+const SUITS = Haggis\Cards\Attributes\SUITS;
+const RANKS = Haggis\Cards\Attributes\RANKS;
+
+global $RED_FIVE;
+$RED_FIVE = new Card( SUITS['RED'], RANKS['5'] );
+
 /**
  * Defines application features from the specific context.
  */
@@ -71,7 +83,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   */
   public function we_have_a_combo_analyzer()
   {
-    static::$analyst = new Haggis\Cards\Combo(array());
+    static::$analyst = new Combo( array($GLOBALS['RED_FIVE']) );
   }
 
   private function create_card_($suit, $rank)
