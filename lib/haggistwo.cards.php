@@ -85,6 +85,8 @@ namespace Haggis\Cards {
 
       $this->rank_ = $rank;
 
+      $this->points_ = Attributes\POINTS[$rank];
+
       $this->owner_ =
         isset($options['owner'])
           ? $options['owner']
@@ -111,6 +113,11 @@ namespace Haggis\Cards {
     function rank()
     {
       return $this->rank_;
+    }
+
+    function points()
+    {
+      return $this->points_;
     }
 
 
@@ -151,7 +158,7 @@ namespace Haggis\Cards {
 
 
     function to_a()
-    {
+    { // REFACTOR: eventually we want rename this array's keys to 'suit', 'rank', etc.
       return
         array('type' => $this->suit_
              ,'type_arg' => $this->rank_
@@ -164,6 +171,7 @@ namespace Haggis\Cards {
 
     private $suit_;
     private $rank_;
+    private $points_;
     // REFACTOR? Not sure cards should know the following...
     private $owner_;    // FOREHAND|MIDDLEHAND|REARHAND(dealer)
     private $location_; // HAND|PILE|TRICKS|HAGGIS
