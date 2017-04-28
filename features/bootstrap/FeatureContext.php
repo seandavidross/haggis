@@ -11,7 +11,10 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Assert\Functions;
 
 require_once "./lib/haggistwo.cards.php";
-use Haggis\Cards\Card as Card;
+require_once "./lib/haggistwo.combo.php";
+
+use Haggis\Cards\Card as Card; 
+
 const SUITS = Haggis\Cards\SUITS;
 const RANKS = Haggis\Cards\RANKS;
 

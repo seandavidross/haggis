@@ -1,6 +1,8 @@
 <?php
 
 require_once "./lib/haggistwo.cards.php";
+require_once "./lib/haggistwo.combo.php";
+
 use Haggis\Cards\Card as Card;
 use Haggis\Cards\Combo as Combo;
 use Haggis\Cards\Attributes;
