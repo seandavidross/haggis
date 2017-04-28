@@ -7,8 +7,8 @@ use Haggis\Cards\Attributes;
 use Haggis\Exception\NullCombination as NullCombination;
 use Haggis\Exception\EmptyCombination as EmptyCombination;
 
-const SUITS = Haggis\Cards\Attributes\SUITS;
-const RANKS = Haggis\Cards\Attributes\RANKS;
+const SUITS = Haggis\Cards\SUITS;
+const RANKS = Haggis\Cards\RANKS;
 
 global $RED_FIVE;
 $RED_FIVE = new Card( SUITS['RED'], RANKS['5'] );
