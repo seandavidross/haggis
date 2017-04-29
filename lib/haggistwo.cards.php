@@ -71,7 +71,7 @@ namespace Haggis\Cards
          );
 
   const POINT_CARDS = array(3, 5, 7, 9);
-  // REFACTOR: move to Haggis/Hand/MAX_SIZE...
+    // REFACTOR: move to Haggis/Hand/MAX_SIZE...
   const MAX_HAND_SIZE = 17;
 
 
@@ -80,9 +80,7 @@ namespace Haggis\Cards
     function __construct(int $suit, int $rank, $options = array())
     {
       $this->suit_ = $this->check_suit_($suit);
-
       $this->rank_ = $this->check_rank_($rank);
-
       $this->points_ = POINTS[$rank];
 
       $this->owner_
@@ -176,9 +174,7 @@ namespace Haggis\Cards
     function with_owner(int $new_owner)
     {
       $clone = clone $this;
-
       $clone->owner_ = $this->check_owner_($new_owner);
-
       return $clone;
     }
 
@@ -192,9 +188,7 @@ namespace Haggis\Cards
     function with_location(int $new_location)
     {
       $clone = clone $this;
-
       $clone->location_ = $this->check_location_($new_location);
-
       return $clone;
     }
 
@@ -208,9 +202,7 @@ namespace Haggis\Cards
     function with_position(int $new_position)
     {
       $clone = clone $this;
-
       $clone->position_ = $this->check_postition_($new_position);
-
       return $clone;
     }
 
@@ -227,13 +219,6 @@ namespace Haggis\Cards
     }
 
 
-    private $suit_;
-    private $rank_;
-    private $points_;
-    // REFACTOR? Not sure cards should know the following...
-    private $owner_;
-    private $location_;
-    private $position_;
   }
 
 }
