@@ -57,14 +57,14 @@ describe("Combo", function() {
     context("with a single non-wild card", function() {
       
       beforeEach(function() {
-        $singleton = $GLOBALS['RED_FIVE']->to_a();
+        $singleton = $GLOBALS['RED_FIVE']->to_hash();
 
         $this->combo_ = new Combo( array($singleton) );
 
         $this->possibles_ 
           = $this
               ->combo_
-              ->get_possible_combinations(array($singleton));
+              ->get_possible_combinations( array($singleton) );
       });
 
       

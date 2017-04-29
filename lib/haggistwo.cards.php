@@ -215,7 +215,7 @@ namespace Haggis\Cards
     }
 
 
-    function to_a()
+    function to_hash()
     { // Eventually the key names need to be updated and need to include 'points'
       return
         array('type' => $this->suit_
