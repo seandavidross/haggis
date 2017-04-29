@@ -79,7 +79,7 @@ describe("Combo", function() {
 
       
       it("should be a singleton", function() {
-        expect($this->possibles_[0]['nbr']).toBe(1);
+        expect($this->possibles_[0]['nbr'])->toBe(1);
       });
 
     });
