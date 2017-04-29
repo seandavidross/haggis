@@ -136,6 +136,9 @@ namespace Haggis\Cards
     }
 
 
+    // NOTE: this truly doesn't belong here. It belongs in a Hand class... 
+    // the position >= MAX_HAND_SIZE should really be position >= $this->size_ 
+    // (where $this is an instance of class 'Hand')
     private function check_position_(int $position)
     {
       if( $position < 0 || $position >= MAX_HAND_SIZE) throw new InvalidPosition();
@@ -167,9 +170,13 @@ namespace Haggis\Cards
     }
 
 
-    function change_owner(int $new_owner)
+    function with_owner(int $new_owner)
     {
-      $this->owner_ = $this->check_owner_($new_owner);
+      $clone = clone $this;
+
+      $clone->owner_ = $this->check_owner_($new_owner);
+      
+      return $clone;
     }
 
 
@@ -179,9 +186,13 @@ namespace Haggis\Cards
     }
 
 
-    function change_location(int $new_location)
+    function with_location(int $new_location)
     {
-      $this->location_ = $this->check_location_($new_location);
+      $clone = clone $this;
+      
+      $clone->location_ = $this->check_location_($new_location);
+      
+      return $clone;
     }
 
 
@@ -191,9 +202,13 @@ namespace Haggis\Cards
     }
 
 
-    function change_position(int $new_position)
+    function with_position(int $new_position)
     {
-      $this->position_ = $this->check_postition_($new_position);
+      $clone = clone $this;
+
+      $clone->position_ = $this->check_postition_($new_position);
+
+      return $clone;
     }
 
 

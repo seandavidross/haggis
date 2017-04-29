@@ -37,7 +37,7 @@ namespace Haggis\Cards
 
       $possible_combinations = array();
 
-      if( $this->suit_count_is(0) ) // it's empy or it only has wild cards
+      if( $this->suit_count_is(0) ) // it's empty or it only has wild cards
       {
         $possible_combinations[] = $this->may_be_a_wild_singleton_or_a_wild_bomb();
       }

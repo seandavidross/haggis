@@ -54,14 +54,32 @@ describe("Combo", function() {
 
   describe("#get_possible_combinations", function() {
 
-    context("with_a_single_card", function() {
+    context("with a single non-wild card", function() {
       
       beforeEach(function() {
-        $this->combo_ = new Combo( array($GLOBALS['RED_FIVE']) );
+        $singleton = $GLOBALS['RED_FIVE']->to_a();
+
+        $this->combo_ = new Combo( array($singleton) );
+
+        $this->possibles_ 
+          = $this
+              ->combo_
+              ->get_possible_combinations(array($singleton));
       });
 
-      it("should return a set", function() {
+      
+      it("should return only one possibility", function() {
+        expect(count($this->possibles_))->toBe(1); 
+      });
 
+
+      it("should return a set", function() {
+        expect($this->possibles_[0]['type'])->toBe('set');
+      });
+
+      
+      it("should be a singleton", function() {
+        expect($this->possibles_[0]['nbr']).toBe(1);
       });
 
     });

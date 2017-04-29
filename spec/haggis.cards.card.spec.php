@@ -20,7 +20,8 @@ describe("Card", function() {
         return new Card(8, Haggis\Cards\RANKS['8']);
       };
 
-      expect($creating_a_card_with_an_invalid_suit)->toThrow(new InvalidSuit());
+      expect($creating_a_card_with_an_invalid_suit)
+        ->toThrow(new InvalidSuit());
 
     });
 
@@ -31,7 +32,8 @@ describe("Card", function() {
         return new Card(null, Haggis\Cards\RANKS['8']);
       };
 
-      expect($creating_a_card_with_a_null_suit)->toThrow(new TypeError());
+      expect($creating_a_card_with_a_null_suit)
+        ->toThrow(new TypeError());
 
     });
 
@@ -42,7 +44,8 @@ describe("Card", function() {
         return new Card(Haggis\Cards\SUITS['RED'], 15);
       };
 
-      expect($creating_a_card_with_an_invalid_rank)->toThrow(new InvalidRank());
+      expect($creating_a_card_with_an_invalid_rank)
+        ->toThrow(new InvalidRank());
 
     });
 
@@ -57,7 +60,8 @@ describe("Card", function() {
                   );
       };
 
-      expect($creating_a_card_with_an_invalid_owner)->toThrow(new InvalidOwner());
+      expect($creating_a_card_with_an_invalid_owner)
+        ->toThrow(new InvalidOwner());
 
     });
 
@@ -72,7 +76,8 @@ describe("Card", function() {
                   );
       };
 
-      expect($creating_a_card_with_an_invalid_location)->toThrow(new InvalidLocation());
+      expect($creating_a_card_with_an_invalid_location)
+        ->toThrow(new InvalidLocation());
 
     });
 
@@ -87,7 +92,8 @@ describe("Card", function() {
                   );
       };
 
-      expect($creating_a_card_with_an_invalid_position)->toThrow(new InvalidPosition());
+      expect($creating_a_card_with_an_invalid_position)
+        ->toThrow(new InvalidPosition());
 
     });
 
@@ -102,7 +108,8 @@ describe("Card", function() {
                   );
       };
 
-      expect($creating_a_card_with_an_negative_position)->toThrow(new InvalidPosition());
+      expect($creating_a_card_with_an_negative_position)
+        ->toThrow(new InvalidPosition());
 
     });
 
