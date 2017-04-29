@@ -2,6 +2,7 @@
 
 require_once "./lib/haggistwo.cards.php";
 require_once "./lib/haggistwo.combo.php";
+require_once "./lib/haggistwo.exceptions.php";
 
 use Haggis\Cards\Card as Card;
 use Haggis\Cards\Combo as Combo;
@@ -24,8 +25,8 @@ describe("Combo", function() {
           $combo = new Combo(null);
         };
 
-        expect($creating_a_null_combo)->
-          toThrow(new TypeError());
+        expect($creating_a_null_combo)
+          ->toThrow(new TypeError());
     });
 
 
@@ -34,8 +35,8 @@ describe("Combo", function() {
           $combo = new Combo(array());
         };
 
-        expect($creating_an_empty_combo)->
-          toThrow(new EmptyCombination("A combo cannot contain zero cards"));
+        expect($creating_an_empty_combo)
+          ->toThrow(new EmptyCombination("A combo cannot contain zero cards"));
     });
 
     it("should fail when any card is null", function() {
@@ -43,8 +44,8 @@ describe("Combo", function() {
           $combo = new Combo(array(null));
         };
 
-        expect($creating_a_combo_with_a_null_card)->
-          toThrow(new NullCombination("A combo's cards cannot be null."));
+        expect($creating_a_combo_with_a_null_card)
+          ->toThrow(new NullCombination("A combo's cards cannot be null."));
     });
   
   });

@@ -1,6 +1,10 @@
 <?php
 namespace Haggis\Cards
 {
+  require_once "./lib/haggistwo.exceptions.php";
+  
+  use Haggis\Exception\InvalidSuit as InvalidSuit;
+
   const SUITS =
     array('RED' => 0
          ,'ORANGE' => 1
@@ -48,7 +52,10 @@ namespace Haggis\Cards
 
 
   const WILD_CARDS =
-    array('JACK' => 11, 'QUEEN' => 12, 'KING' => 13);
+    array('JACK' => 11
+         ,'QUEEN' => 12
+         ,'KING' => 13
+         );
 
   // REFACTOR: these don't belong here...
   const OWNERS =
@@ -70,20 +77,29 @@ namespace Haggis\Cards
 
   class Card 
   {
-    function __construct($suit, $rank, $options = array()) 
+    function __construct(int $suit, int $rank, $options = array()) 
     {
+      if( !in_array($suit, array_values(SUITS)) ) 
+        throw new InvalidSuit("Cards can only be made using suit values from Haggis\Cards\SUITS");
+
       $this->suit_ = $suit;
 
       $this->rank_ = $rank;
 
-      $this->owner_ = 
-        isset($options['owner']) ? $options['owner'] : OWNERS['FOREHAND'];
+      $this->owner_ 
+        = isset($options['owner']) 
+        ? $options['owner'] 
+        : OWNERS['FOREHAND'];
 
-      $this->location_ = 
-        isset($options['location']) ? $options['location'] : LOCATIONS['HAND'];
+      $this->location_ 
+        = isset($options['location']) 
+        ? $options['location'] 
+        : LOCATIONS['HAND'];
       
-      $this->position_ = 
-        isset($options['position']) ? $options['position'] : 0;
+      $this->position_ 
+        = isset($options['position']) 
+        ? $options['position'] 
+        : 0;
     }
 
 

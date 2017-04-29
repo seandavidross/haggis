@@ -11,6 +11,8 @@ namespace Haggis\Exception
   class NullCombination extends Exception {}
 
   class EmptyCombination extends Exception {}
+
+  class InvalidSuit extends Exception {}
 }
 
 ?>
