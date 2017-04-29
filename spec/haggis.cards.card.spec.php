@@ -24,6 +24,16 @@ describe("Card", function() {
     });
 
 
+    it("should fail with a null suit", function() {
+      $creating_a_card_with_a_null_suit = function() {
+        return new Card(null, Haggis\Cards\RANKS['8']);
+      };
+
+      expect($creating_a_card_with_a_null_suit)->toThrow(new TypeError());
+
+    });
+
+
     it("should fail with an invalid rank", function() {
       $creating_a_card_with_an_invalid_rank = function() {
         return new Card(Haggis\Cards\SUITS['RED'], 15);
