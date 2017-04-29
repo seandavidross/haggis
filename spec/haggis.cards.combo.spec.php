@@ -16,6 +16,7 @@ const RANKS = Haggis\Cards\RANKS;
 global $RED_FIVE;
 $RED_FIVE = new Card( SUITS['RED'], RANKS['5'] );
 
+
 describe("Combo", function() {
 
   describe("::__construct", function() {
@@ -61,6 +62,7 @@ describe("Combo", function() {
 
         $this->combo_ = new Combo( array($singleton) );
 
+        // until we remove $cards from method signature, we still need to pass it...
         $this->possibles_ 
           = $this
               ->combo_
