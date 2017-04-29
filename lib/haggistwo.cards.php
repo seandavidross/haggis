@@ -2,8 +2,9 @@
 namespace Haggis\Cards
 {
   require_once "./lib/haggistwo.exceptions.php";
-  
+
   use Haggis\Exception\InvalidSuit as InvalidSuit;
+  use Haggis\Exception\InvalidRank as InvalidRank;
 
   const SUITS =
     array('RED' => 0
@@ -79,12 +80,9 @@ namespace Haggis\Cards
   {
     function __construct(int $suit, int $rank, $options = array()) 
     {
-      if( !in_array($suit, array_values(SUITS)) ) 
-        throw new InvalidSuit("Cards can only be made using suit values from Haggis\Cards\SUITS");
+      $this->suit_ = $this->check_suit_($suit);
 
-      $this->suit_ = $suit;
-
-      $this->rank_ = $rank;
+      $this->rank_ = $this->check_rank_($rank);
 
       $this->owner_ 
         = isset($options['owner']) 
@@ -100,6 +98,22 @@ namespace Haggis\Cards
         = isset($options['position']) 
         ? $options['position'] 
         : 0;
+    }
+
+
+    private function check_suit_($suit) 
+    {
+      if( !in_array($suit, array_values(SUITS)) ) throw new InvalidSuit();
+      
+      return $suit;
+    }
+
+
+    private function check_rank_($rank)
+    {
+      if( !in_array($rank, array_values(RANKS))) throw new InvalidRank();
+
+      return $rank;
     }
 
 
