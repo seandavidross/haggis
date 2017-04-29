@@ -17,7 +17,7 @@ namespace Haggis\Exception
   {
     public function __construct() 
     {
-      parent::__construct("Cards can only be made using suit values from Haggis\Cards\SUITS");
+      parent::__construct("A card's suit must be one of Haggis\Cards\SUITS");
     }
 
   }
@@ -27,9 +27,37 @@ namespace Haggis\Exception
   {
     public function __construct() 
     {
-      parent::__construct("Cards can only be made using rank values from Haggis\Cards\RANKS");
+      parent::__construct("A card's rank must be one of Haggis\Cards\RANKS");
     }
   }
+
+  
+  class InvalidOwner extends Exception 
+  {
+    public function __construct() 
+    {
+      parent::__construct("A card's owner must be one of Haggis\Cards\OWNERS");
+    }
+  }
+
+
+  class InvalidLocation extends Exception 
+  {
+    public function __construct() 
+    {
+      parent::__construct("A card's location must be one of Haggis\Cards\LOCATIONS");
+    }
+  }
+
+
+  class InvalidPosition extends Exception 
+  {
+    public function __construct() 
+    {
+      parent::__construct("A card's position must be between 0 and 16");
+    }
+  }
+
 }
 
 ?>

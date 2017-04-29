@@ -5,6 +5,10 @@ namespace Haggis\Cards
 
   use Haggis\Exception\InvalidSuit as InvalidSuit;
   use Haggis\Exception\InvalidRank as InvalidRank;
+  use Haggis\Exception\InvalidOwner as InvalidOwner;
+  use Haggis\Exception\InvalidLocation as InvalidLocation;
+  use Haggis\Exception\InvalidPosition as InvalidPosition;
+
 
   const SUITS =
     array('RED' => 0
@@ -14,7 +18,6 @@ namespace Haggis\Cards
          ,'BLUE' => 4
          ,'WILD' => 'wild'
          );
-
 
   const RANKS =
     array('2' => 2
@@ -31,10 +34,8 @@ namespace Haggis\Cards
          ,'K' => 13
          );
 
-
   const POINT_CARDS =
     array(3, 5, 7, 9);
-
 
   const POINTS =
     array(2 => 0
@@ -51,7 +52,6 @@ namespace Haggis\Cards
          ,13 => 5 // K
          );
 
-
   const WILD_CARDS =
     array('JACK' => 11
          ,'QUEEN' => 12
@@ -66,7 +66,6 @@ namespace Haggis\Cards
          ,'HAGGIS' => 3
          );
 
-
   const LOCATIONS =
     array('HAND' => 0
          ,'PILE' => 1
@@ -74,6 +73,8 @@ namespace Haggis\Cards
          ,'HAGGIS' => 3
          );
 
+  // REFACTOR: move to Haggis/Hand/MAX_SIZE...
+  const MAX_HAND_SIZE = 17;
 
 
   class Card 
@@ -88,18 +89,18 @@ namespace Haggis\Cards
 
       $this->owner_ 
         = isset($options['owner']) 
-        ? $options['owner'] 
+        ? $this->check_owner_($options['owner'])
         : OWNERS['FOREHAND'];
 
       $this->location_ 
         = isset($options['location']) 
-        ? $options['location'] 
+        ? $this->check_location_($options['location'])
         : LOCATIONS['HAND'];
       
       $this->position_ 
         = isset($options['position']) 
-        ? $options['position'] 
-        : 0;
+        ? $this->check_position_($options['position'])
+        : 0; // leftmost card
     }
 
 
@@ -116,6 +117,30 @@ namespace Haggis\Cards
       if( !in_array($rank, array_values(RANKS))) throw new InvalidRank();
 
       return $rank;
+    }
+
+
+    private function check_owner_(int $owner)
+    {
+      if( !in_array($owner, array_values(OWNERS))) throw new InvalidOwner();
+
+      return $owner;
+    }
+
+
+    private function check_location_(int $location)
+    {
+      if( !in_array($location, array_values(LOCATIONS))) throw new InvalidLocation();
+
+      return $location;
+    }
+
+
+    private function check_position_(int $position)
+    {
+      if( $position < 0 || $position >= MAX_HAND_SIZE) throw new InvalidPosition();
+
+      return $position;
     }
 
 
@@ -142,9 +167,9 @@ namespace Haggis\Cards
     }
 
 
-    function change_owner($new_owner)
+    function change_owner(int $new_owner)
     {
-      $this->owner_ = $new_owner;
+      $this->owner_ = $this->check_owner_($new_owner);
     }
 
 
@@ -154,9 +179,9 @@ namespace Haggis\Cards
     }
 
 
-    function change_location($new_location)
+    function change_location(int $new_location)
     {
-      $this->location_ = $new_location;
+      $this->location_ = $this->check_location_($new_location);
     }
 
 
@@ -166,9 +191,9 @@ namespace Haggis\Cards
     }
 
 
-    function change_position($new_position)
+    function change_position(int $new_position)
     {
-      $this->position_ = $new_position;
+      $this->position_ = $this->check_postition_($new_position);
     }
 
 
@@ -188,9 +213,9 @@ namespace Haggis\Cards
     private $rank_;
     private $points_;
     // REFACTOR? Not sure cards should know the following...
-    private $owner_;    // FOREHAND|MIDDLEHAND|REARHAND(dealer)
-    private $location_; // HAND|PILE|TRICKS|HAGGIS 
-    private $position_; // 0-16 (14-16 are face cards)
+    private $owner_;    
+    private $location_; 
+    private $position_; 
   }
 
 }
