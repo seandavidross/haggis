@@ -35,21 +35,21 @@ namespace Haggis\Cards
       $this->prepare_to_analyze($cards);
       list($highest_rank, $lowest_rank) = $this->find_the_highest_and_the_lowest_ranks();
 
-      $possible_combinations = array();
+      $possibles = array();
 
       if( $this->suit_count_is(0) ) // it's empty or it only has wild cards
       {
-        $possible_combinations[] = $this->may_be_a_wild_singleton_or_a_wild_bomb();
+        $possibles[] = $this->may_be_a_wild_singleton_or_a_wild_bomb();
       }
       else if( $this->could_possibly_be_a_rainbow_or_a_suited_bomb() ) 
       {
-        $possible_combinations[] = $this->may_be_a_rainbow_or_a_suited_bomb();
+        $possibles[] = $this->may_be_a_rainbow_or_a_suited_bomb();
       }
       else
       {
         if( $lowest_rank == $highest_rank )
         {
-          $possible_combinations[] = $this->may_be_a_set_with_a_value_of($lowest_rank);
+          $possibles[] = $this->may_be_a_set_with_a_value_of($lowest_rank);
         }
 
         // a sequence is two or more consecutively ranked sets, e.g., 6-6-6-7-7-7,
@@ -62,11 +62,11 @@ namespace Haggis\Cards
           list($L,$W,$R)   = array($sequence_length, $sequence_width, $sequence_rank);
 
           if( $this->could_possibly_be_a_sequence_with_these_dimensions($L, $W, $R) )
-            $possible_combinations[] = $this->may_be_a_sequence_with_these_attributes($W, $R);
+            $possibles[] = $this->may_be_a_sequence_with_these_attributes($W, $R);
         }
       } // end else
 
-      return $possible_combinations;
+      return $possibles;
     } // end #get_possible_combinations
 
     private function prepare_to_analyze($cards) {

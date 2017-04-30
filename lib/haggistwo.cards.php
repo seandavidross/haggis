@@ -56,18 +56,18 @@ namespace Haggis\Cards
          );
 
   const OWNERS =
-    array( 'DEALER' => 0
+    array( 'DEALER' => 0 
          , 'FOREHAND' => 1
          , 'MIDDLEHAND' => 2
          , 'HAGGIS' => 3
          );
 
-  const LOCATIONS =
-    array( 'HAND' => 0
-         , 'PILE' => 1
-         , 'TRICKS' => 2
+  const LOCATIONS = 
+    array( 'HAND' => 0 
+         , 'PILE' => 1 
+         , 'TRICKS' => 2 
          , 'HAGGIS' => 3
-         );
+         ); 
 
   const POINT_CARDS = array(3, 5, 7, 9);
 

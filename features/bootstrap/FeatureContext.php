@@ -12,15 +12,7 @@ use PHPUnit\Framework\Assert\Functions;
 
 require_once "./lib/haggistwo.cards.php";
 require_once "./lib/haggistwo.combo.php";
-
-use Haggis\Cards\Card as Card; 
-
-const SUITS = Haggis\Cards\SUITS;
-const RANKS = Haggis\Cards\RANKS;
-
-//REFACTOR: put this into a helper module...
-global $RED_FIVE;
-$RED_FIVE = new Card( SUITS['RED'], RANKS['5'] );
+require_once "./fixtures/haggis.fixtures.cards.php";
 
 
 /**
@@ -92,7 +84,8 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
            , 'location' => 'hand'
            , 'location_arg' => 1
            , 'type' => SUITS[$suit]
-           , 'type_arg' => RANKS[$rank]);
+           , 'type_arg' => RANKS[$rank]
+           );
   }
 
   /**

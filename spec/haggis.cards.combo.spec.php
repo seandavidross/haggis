@@ -1,43 +1,14 @@
 <?php
 
-require_once "./lib/haggistwo.cards.php";
 require_once "./lib/haggistwo.combo.php";
 require_once "./lib/haggistwo.exceptions.php";
 
-use Haggis\Cards\Card as Card;
+// the cards we'll be using to form combos...
+require_once "./fixtures/haggis.fixtures.cards.php";
+
 use Haggis\Cards\Combo as Combo;
-use Haggis\Cards\Attributes;
 use Haggis\Exception\NullCombination as NullCombination;
 use Haggis\Exception\EmptyCombination as EmptyCombination;
-
-const SUITS = Haggis\Cards\SUITS;
-const RANKS = Haggis\Cards\RANKS;
-
-
-$GLOBALS['RED_FIVE'] = 
-  new Card( SUITS['RED'], RANKS['5'] );
-
-$GLOBALS['RED_SIX'] = 
-  new Card( SUITS['RED'], RANKS['6'] );
-
-$GLOBALS['GREEN_FIVE'] = 
-  new Card( SUITS['GREEN'], RANKS['5'] );
-
-$GLOBALS['GREEN_SIX'] = 
-  new Card( SUITS['GREEN'], RANKS['6'] );
-
-$GLOBALS['BLUE_FIVE'] = 
-  new Card( SUITS['BLUE'], RANKS['5'] );
-
-$GLOBALS['WILD_JACK'] = 
-  new Card( SUITS['WILD'], RANKS['J'] );
-
-$GLOBALS['WILD_QUEEN'] = 
-  new Card( SUITS['WILD'], RANKS['Q'] );
-
-$GLOBALS['WILD_KING'] = 
-  new Card( SUITS['WILD'], RANKS['K'] );
-
 
 
 describe("Combo", function() {
@@ -488,6 +459,158 @@ describe("Combo", function() {
 
     });
     
+
+
+    context("with one spot card and three wilds", function() {
+
+      beforeEach(function() {
+        $one_spot_and_three_wild = 
+          array( $GLOBALS['RED_FIVE']->to_hash()
+               , $GLOBALS['WILD_JACK']->to_hash()
+               , $GLOBALS['WILD_QUEEN']->to_hash()
+               , $GLOBALS['WILD_KING']->to_hash()
+               );
+        
+        $this->combo = new Combo($one_spot_and_three_wild);
+
+        $this->possibles = 
+          $this
+            ->combo
+            ->get_possible_combinations($one_spot_and_three_wild);
+      });
+
+      
+      it("should return three possibilities", function() {
+        expect(count($this->possibles))->toBe(3); 
+      });
+
+
+      it("could be a set", function() {
+        expect($this->possibles[0]['type'])->toBe('set');
+      });
+
+      
+      it("would be a 4-of-a-kind", function() {
+        expect($this->possibles[0]['nbr'])->toBe(4);
+      });
+
+      
+      it("could be a sequence of singles", function() {
+        expect($this->possibles[1]['type'])->toBe('sequence');
+      });
+
+      
+      it("would be a run of 4", function() {
+        expect($this->possibles[1]['nbr'])->toBe(4);
+      });
+
+
+      it("could be a sequence of pairs", function() {
+        expect($this->possibles[2]['type'])->toBe('sequence');
+      });
+
+      
+      it("would be a run of 2", function() {
+        $number_of_cards_in_run_of_pairs = 4;
+
+        expect($this->possibles[2]['nbr'])
+          ->toBe($number_of_cards_in_run_of_pairs);
+      });
+
+    });
+
+
+
+    context("with all odd, suited spot cards", function() {
+
+      beforeEach(function() {
+        $odd_suited_spot_cards = 
+          array( $GLOBALS['RED_THREE']->to_hash()
+               , $GLOBALS['RED_FIVE']->to_hash()
+               , $GLOBALS['RED_SEVEN']->to_hash()
+               , $GLOBALS['RED_NINE']->to_hash()
+               );
+        
+        $this->combo = new Combo($odd_suited_spot_cards);
+
+        $this->possibles = 
+          $this
+            ->combo
+            ->get_possible_combinations($odd_suited_spot_cards);
+      });
+
+      
+      it("should return only one possibility", function() {
+        expect(count($this->possibles))->toBe(1); 
+      });
+
+
+      it("should be a bomb", function() {
+        expect($this->possibles[0]['type'])->toBe('bomb');
+      });
+
+    });
+
+
+
+    context("with all odd, mixed suit spot cards", function() {
+
+      beforeEach(function() {
+        $odd_mixed_suit_spot_cards = 
+          array( $GLOBALS['RED_THREE']->to_hash()
+               , $GLOBALS['GREEN_FIVE']->to_hash()
+               , $GLOBALS['BLUE_SEVEN']->to_hash()
+               , $GLOBALS['ORANGE_NINE']->to_hash()
+               );
+        
+        $this->combo = new Combo($odd_mixed_suit_spot_cards);
+
+        $this->possibles = 
+          $this
+            ->combo
+            ->get_possible_combinations($odd_mixed_suit_spot_cards);
+      });
+
+      
+      it("should return only one possibility", function() {
+        expect(count($this->possibles))->toBe(1); 
+      });
+
+
+      it("should be a bomb", function() {
+        expect($this->possibles[0]['type'])->toBe('bomb');
+      });
+
+    });
+
+
+
+    context("with all odd, mixed suit spot cards, plus one", function() {
+
+      beforeEach(function() {
+        $odd_mixed_suit_spot_cards_plus_one = 
+          array( $GLOBALS['RED_THREE']->to_hash()
+               , $GLOBALS['GREEN_FIVE']->to_hash()
+               , $GLOBALS['BLUE_FIVE']->to_hash()
+               , $GLOBALS['BLUE_SEVEN']->to_hash()
+               , $GLOBALS['ORANGE_NINE']->to_hash()
+               );
+        
+        $this->combo = new Combo($odd_mixed_suit_spot_cards_plus_one);
+
+        $this->possibles = 
+          $this
+            ->combo
+            ->get_possible_combinations($odd_mixed_suit_spot_cards_plus_one);
+      });
+
+      
+      it("should return no possibilities", function() {
+        expect(count($this->possibles))->toBe(0); 
+      });
+
+    });
+
 
   });
 
