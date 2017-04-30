@@ -23,7 +23,7 @@ namespace Haggis\Cards
       $this->possibles = array();
       $this->cards_by_suit = array();
       $this->cards_by_rank = array();
-      $this->wild_cards_ids = array();
+      $this->wild_card_ids = array();
       $this->default_display = array();
       $this->card_display_order = array();
       $this->has_cached_possibles = false;
@@ -107,7 +107,7 @@ namespace Haggis\Cards
     { // Build a "card grid" (serie-value and value-serie)
       $this->cards_by_suit  = array_fill_keys( SUITS, array() );
       $this->cards_by_rank  = array_fill_keys( RANKS, array() );
-      $this->wild_cards_ids = array();
+      $this->wild_card_ids = array();
 
       foreach( $cards as $card ) 
       {
@@ -118,7 +118,7 @@ namespace Haggis\Cards
         $this->cards_by_rank[$rank][$suit] = $card['id'];
         
         if( $suit == SUITS['WILD'] ) 
-          $this->wild_cards_ids[] = $card['id'];
+          $this->wild_card_ids[] = $card['id'];
       }
     }
 
@@ -137,11 +137,11 @@ namespace Haggis\Cards
 
     private function arrange_cards_by_id_($cards) 
     {
-      $pluck_id_ = function($c) {
-         $c['id']; 
+      $id_ = function($card) {
+         $card['id']; 
       };
 
-      return array_map($pluck_id_, $cards); // should we sort the cards?
+      return array_map($id_, $cards); 
     }
 
 
@@ -165,38 +165,15 @@ namespace Haggis\Cards
 
     private function may_be_wild_single_or_wild_bomb_() 
     {
-      extract(WILD_CARDS); // either combo has only wild cards or...
-      
-      $JACK  
-        = isset($this->cards_by_suit[SUITS['WILD']][$JACK])  
-        ? $JACK  
-        : 0;
-      
-      $QUEEN 
-        = isset($this->cards_by_suit[SUITS['WILD']][$QUEEN]) 
-        ? $QUEEN 
-        : 0;
-      
-      $KING  
-        = isset($this->cards_by_suit[SUITS['WILD']][$KING])  
-        ? $KING  
-        : 0;
+      $combo_value = $this->sum_wild_card_ranks_();
 
-      $combo_value = $JACK + $QUEEN + $KING; // {0,11,12,13,23,24,25,36}
-      
-      // ... there are no cards in the combo at all...
       if( $combo_value == 0 )
         throw new ImpossibleCombination("impossible bomb");
 
-      $combo_type  
-        = $this->wild_count_is_(1) 
-        ? 'set' 
-        : 'bomb';
+      $combo_type = $this->wild_count_is_(1) ? 'set' : 'bomb';
       
-      $combo_value 
-        = $combo_type == 'bomb' 
-        ? ($combo_value % 10 - 1)
-        : $combo_value;
+      if( $combo_type == 'bomb' )
+        $combo_value = ($combo_value % 10 - 1);
 
       return 
         array( 'type' => $combo_type
@@ -205,6 +182,20 @@ namespace Haggis\Cards
              , 'nbr' => $this->number_of_cards
              , 'display' => $this->default_display 
              );
+    }
+
+    private function sum_wild_card_ranks_()
+    {
+      extract(WILD_CARDS);
+      $wilds = $this->cards_by_suit[SUITS['WILD']];
+      
+      $JACK = isset($wilds[$JACK]) ? $JACK  : 0;
+      
+      $QUEEN = isset($wilds[$QUEEN]) ? $QUEEN : 0;
+      
+      $KING  = isset($wilds[$KING]) ? $KING  : 0;
+
+      return $JACK + $QUEEN + $KING; // {0,11,12,13,23,24,25,36}
     }
 
     private function wild_count_is_($count) 
@@ -348,7 +339,7 @@ namespace Haggis\Cards
 
       for( $rank = $this->lowest_rank; $rank <= $sequence_rank; $rank++ ) 
       {
-        $wild_card_ids = $this->wild_cards_ids;
+        $wild_card_ids = $this->wild_card_ids;
         $non_wildcards_played_with_this_rank = count( $this->cards_by_rank[ $rank ] );
         $number_of_wilds_used += $sequence_width - $non_wildcards_played_with_this_rank;
 
