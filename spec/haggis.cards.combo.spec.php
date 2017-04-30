@@ -13,10 +13,25 @@ use Haggis\Exception\EmptyCombination as EmptyCombination;
 const SUITS = Haggis\Cards\SUITS;
 const RANKS = Haggis\Cards\RANKS;
 
-global $RED_FIVE, $WILD_KING;
 
-$RED_FIVE = new Card( SUITS['RED'], RANKS['5'] );
-$WILD_KING = new Card( SUITS['WILD'], RANKS['K'] );
+$GLOBALS['RED_FIVE'] = 
+  new Card( SUITS['RED'], RANKS['5'] );
+
+$GLOBALS['RED_SIX'] = 
+  new Card( SUITS['RED'], RANKS['6'] );
+
+$GLOBALS['GREEN_FIVE'] = 
+  new Card( SUITS['GREEN'], RANKS['5'] );
+
+$GLOBALS['WILD_JACK'] = 
+  new Card( SUITS['WILD'], RANKS['J'] );
+
+$GLOBALS['WILD_QUEEN'] = 
+  new Card( SUITS['WILD'], RANKS['Q'] );
+
+$GLOBALS['WILD_KING'] = 
+  new Card( SUITS['WILD'], RANKS['K'] );
+
 
 
 describe("Combo", function() {
@@ -57,18 +72,18 @@ describe("Combo", function() {
 
   describe("#get_possible_combinations", function() {
 
-    context("with a single non-wild card", function() {
+    context("with a single spot card", function() {
       
       beforeEach(function() {
-        $single = $GLOBALS['RED_FIVE']->to_hash();
+        $single = array( $GLOBALS['RED_FIVE']->to_hash() );
 
-        $this->combo = new Combo( array($single) );
+        $this->combo = new Combo($single);
 
         // until we remove $cards from method signature, we still need to pass it...
-        $this->possibles 
-          = $this
-              ->combo
-              ->get_possible_combinations( array($single) );
+        $this->possibles = 
+          $this
+            ->combo
+            ->get_possible_combinations($single);
       });
 
       
@@ -77,7 +92,7 @@ describe("Combo", function() {
       });
 
 
-      it("should return a set", function() {
+      it("should be a set", function() {
         expect($this->possibles[0]['type'])->toBe('set');
       });
 
@@ -92,15 +107,15 @@ describe("Combo", function() {
     context("with a single wild card", function() {
       
       beforeEach(function() {
-        $single = $GLOBALS['WILD_KING']->to_hash();
+        $single = array( $GLOBALS['WILD_KING']->to_hash() );
 
-        $this->combo = new Combo( array($single) );
+        $this->combo = new Combo($single);
 
         // until we remove $cards from method signature, we still need to pass it...
-        $this->possibles 
-          = $this
-              ->combo
-              ->get_possible_combinations( array($single) );
+        $this->possibles = 
+          $this
+            ->combo
+            ->get_possible_combinations($single);
       });
 
       
@@ -109,7 +124,7 @@ describe("Combo", function() {
       });
 
 
-      it("should return a set", function() {
+      it("should be a set", function() {
         expect($this->possibles[0]['type'])->toBe('set');
       });
 
@@ -117,6 +132,135 @@ describe("Combo", function() {
       it("should be a singleton", function() {
         expect($this->possibles[0]['nbr'])->toBe(1);
       });
+
+    });
+
+
+    context("with two unmatched spot cards", function() {
+
+      beforeEach(function() {
+        $unmatched_cards = 
+          array( $GLOBALS['RED_FIVE']->to_hash()
+               , $GLOBALS['RED_SIX']->to_hash()
+               );
+        
+        $this->combo = new Combo($unmatched_cards);
+
+        $this->possibles = 
+          $this
+            ->combo
+            ->get_possible_combinations($unmatched_cards);
+      });
+
+      
+      it("should return no possibilities", function() {
+        expect(count($this->possibles))->toBe(0);
+      });
+
+    });
+
+
+    context("with one spot and one wild card", function() {
+
+      beforeEach(function() {
+        $one_spot_and_one_wild = 
+          array( $GLOBALS['RED_FIVE']->to_hash()
+               , $GLOBALS['WILD_KING']->to_hash()
+               );
+        
+        $this->combo = new Combo($one_spot_and_one_wild);
+
+        $this->possibles = 
+          $this
+            ->combo
+            ->get_possible_combinations($one_spot_and_one_wild);
+      });
+
+      
+      it("should return only one possibility", function() {
+        expect(count($this->possibles))->toBe(1); 
+      });
+
+
+      it("should be a set", function() {
+        expect($this->possibles[0]['type'])->toBe('set');
+      });
+
+      
+      it("should be a pair", function() {
+        expect($this->possibles[0]['nbr'])->toBe(2);
+      });
+
+
+    });
+
+
+    context("with two matched spot cards", function() {
+
+      beforeEach(function() {
+        $two_matched_cards = 
+          array( $GLOBALS['RED_FIVE']->to_hash()
+               , $GLOBALS['GREEN_FIVE']->to_hash()
+               );
+        
+        $this->combo = new Combo($two_matched_cards);
+
+        $this->possibles = 
+          $this
+            ->combo
+            ->get_possible_combinations($two_matched_cards);
+      });
+
+      
+      it("should return only one possibility", function() {
+        expect(count($this->possibles))->toBe(1); 
+      });
+
+
+      it("should be a set", function() {
+        expect($this->possibles[0]['type'])->toBe('set');
+      });
+
+      
+      it("should be a pair", function() {
+        expect($this->possibles[0]['nbr'])->toBe(2);
+      });
+
+
+    });
+
+
+    context("with two wild cards", function() {
+
+      beforeEach(function() {
+        $two_wild_cards = 
+          array( $GLOBALS['WILD_JACK']->to_hash()
+               , $GLOBALS['WILD_QUEEN']->to_hash()
+               );
+        
+        $this->combo = new Combo($two_wild_cards);
+
+        $this->possibles = 
+          $this
+            ->combo
+            ->get_possible_combinations($two_wild_cards);
+      });
+
+      
+      it("should return only one possibility", function() {
+        expect(count($this->possibles))->toBe(1); 
+      });
+
+
+      it("should be a bomb", function() {
+        expect($this->possibles[0]['type'])->toBe('bomb');
+      });
+
+      
+      it("should have both cards", function() {
+        expect($this->possibles[0]['nbr'])->toBe(2);
+      });
+
 
     });
 
