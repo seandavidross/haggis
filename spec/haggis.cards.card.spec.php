@@ -115,6 +115,47 @@ describe("Card", function() {
 
   });
 
+
+  describe("#with_owner", function() {
+    
+    beforeEach(function() {
+      
+      $this->red_eight = new 
+        Card( Haggis\Cards\SUITS['RED']
+            , Haggis\Cards\RANKS['8']
+            , array('owner' => Haggis\Cards\OWNERS['FOREHAND'])
+            );
+
+      $this->red_8_clone = 
+        $this
+          ->red_eight
+          ->with_owner(Haggis\Cards\OWNERS['MIDDLEHAND']);
+    
+    });
+
+
+    it("should return a clone with a new owner", function() {
+
+      expect( $this->red_eight->suit() )
+        ->toBe( $this->red_8_clone->suit() );
+
+      expect( $this->red_eight->rank() )
+        ->toBe( $this->red_8_clone->rank() );
+      
+      expect( $this->red_eight->location() )
+        ->toBe( $this->red_8_clone->location() );
+
+      expect( $this->red_eight->position() )
+        ->toBe( $this->red_8_clone->position() );
+
+      expect( $this->red_eight->owner() )
+        ->not
+        ->toBe( $this->red_8_clone->owner() );
+
+    });
+
+  });
+
 });
 
 ?>

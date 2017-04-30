@@ -170,7 +170,7 @@ namespace Haggis\Cards
       return $this->owner_;
     }
 
-
+    // NOTE: Immutability may be overkill...
     function with_owner(int $new_owner)
     {
       $clone = clone $this;
