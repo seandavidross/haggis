@@ -240,17 +240,21 @@ namespace Haggis\Cards
     }
 
     private function may_be_rainbow_or_suited_bomb_() 
-    {
-      list($RAINBOW_BOMB, $SUITED_BOMB) = array(1,6);
-      $bomb_value = $this->suit_count_is_(4) ? $RAINBOW_BOMB : $SUITED_BOMB;
-    
+    {    
       return 
         array( 'type' => 'bomb'
-             , 'value' => $bomb_value
+             , 'value' => $this->determine_bomb_value_()
              , 'serienbr' => $this->number_of_suits
              , 'nbr' => $this->number_of_cards
              , 'display' => $this->default_display 
              );
+    }
+
+    private function determine_bomb_value_()
+    {
+      list($rainbow_value, $suited_value) = array(1, 6);
+
+      return $this->suit_count_is_(4) ? $rainbow_value : $suited_value;
     }
 
 
