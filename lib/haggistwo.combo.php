@@ -19,7 +19,16 @@ namespace Haggis\Cards
       if (in_array(null, $cards)) 
         throw new NullCombination("A combo's cards cannot be null.");
 
-      $this->cards_ = $cards;
+      $this->cards = $cards;
+      $this->lowest_rank = 0;
+      $this->possibles = array();
+      $this->cards_by_suit = array();
+      $this->cards_by_rank = array();
+      $this->wild_cards_ids = array();
+      $this->default_display = array();
+      $this->card_display_order = array();
+      $this->has_cached_possibles = false;
+      $this->number_of_wilds_available = 0;      
     }
 
     // Analyse played combo
@@ -32,50 +41,62 @@ namespace Haggis\Cards
     //  ... or null if this is an invalid combo
     function get_possible_combinations($cards)
     {
-      $this->prepare_to_analyze($cards);
-      list($highest_rank, $lowest_rank) = $this->find_the_highest_and_the_lowest_ranks();
+      if( $this->has_cached_possibles )
+        return $this->possibles;
 
-      $possibles = array();
+      $this->prepare_to_analyze($cards);
+      list($highest_rank, $lowest_rank) = $this->find_highest_and_lowest_ranks();
+
+      $this->possibles = array();
 
       if( $this->suit_count_is(0) ) // it's empty or it only has wild cards
       {
-        $possibles[] = $this->may_be_a_wild_singleton_or_a_wild_bomb();
+        $this->possibles[] = $this->may_be_wild_singleton_or_wild_bomb();
       }
-      else if( $this->could_possibly_be_a_rainbow_or_a_suited_bomb() ) 
+      else if( $this->could_be_rainbow_or_suited_bomb() ) 
       {
-        $possibles[] = $this->may_be_a_rainbow_or_a_suited_bomb();
+        $this->possibles[] = $this->may_be_rainbow_or_suited_bomb();
       }
       else
       {
         if( $lowest_rank == $highest_rank )
-        {
-          $possibles[] = $this->may_be_a_set_with_a_value_of($lowest_rank);
-        }
+          $this->possibles[] = $this->may_be_set_with_value($lowest_rank);
 
         // a sequence is two or more consecutively ranked sets, e.g., 6-6-6-7-7-7,
         // and this particular sequence would have a length of 2 (consectuve ranks),
         // a width of 3 (size of sets), and a rank of 7 (highest non-wild rank)
-        for($sequence_width = 1; $sequence_width < count(SUITS); $sequence_width++)
+        for($width = 1; $width < count(SUITS); $width++)
         {
-          $sequence_length = floor( $this->number_of_cards / $sequence_width );
-          $sequence_rank   = $lowest_rank + $sequence_length - 1;
-          list($L,$W,$R)   = array($sequence_length, $sequence_width, $sequence_rank);
-
-          if( $this->could_possibly_be_a_sequence_with_these_dimensions($L, $W, $R) )
-            $possibles[] = $this->may_be_a_sequence_with_these_attributes($W, $R);
+          $maybe_sequence = $this->may_be_sequence_of_width($width);
+          
+          if( !empty($maybe_sequence) ) 
+            $this->possibles[] = $maybe_sequence;
         }
       } // end else
 
-      return $possibles;
+      $this->has_cached_possibles = true;
+
+      return $this->possibles;
     } // end #get_possible_combinations
+
+    function may_be_sequence_of_width($width)
+    {
+      $length = floor( $this->number_of_cards / $width );
+      $rank   = $this->lowest_rank + $length - 1;
+
+      return
+        $this->could_be_sequence_with_dimensions($length, $width, $rank)
+          ? $this->may_be_sequence_with_dimensions($width, $rank)
+          : array();
+    }
 
     private function prepare_to_analyze($cards) {
       // $this->combo_should_not_be_empty( $cards );
       // $this->combo_should_not_be_bigger_than(MAX_HAND_SIZE);
       $this->combo_should_belong_to_you($cards);
 
-      $this->group_cards_by_suit_and_by_rank($cards);
-      $this->count_the_number_of_suits_in($cards);
+      $this->group_cards_by_suit_and_rank($cards);
+      $this->count_suits($cards);
       $this->default_display = $this->arrange_cards_by_id( $cards );
       $this->number_of_cards = count($cards);
       $this->number_of_wilds_available = count( $this->cards_by_suit[SUITS['WILD']] );
@@ -103,7 +124,7 @@ namespace Haggis\Cards
     }
   // REFACTOR: move the above methods into HaggisTwo class.
 
-    private function group_cards_by_suit_and_by_rank($cards) {
+    private function group_cards_by_suit_and_rank($cards) {
       // I'm using a couple of lambdas to alias some vague key names...
       $suit_of = function($c){ return $c['type']; };
       $rank_of = function($c){ return $c['type_arg']; };
@@ -121,7 +142,7 @@ namespace Haggis\Cards
       }
     }
 
-    private function count_the_number_of_suits_in($cards) {
+    private function count_suits($cards) {
       $this->number_of_suits = 0;
 
       foreach( $this->cards_by_suit as $suit => $cards ) {
@@ -135,7 +156,7 @@ namespace Haggis\Cards
       return array_map($pluck_id, $cards); // should we sort the cards?
     }
 
-    private function find_the_highest_and_the_lowest_ranks() {
+    private function find_highest_and_lowest_ranks() {
       $highest_rank = null;
       $lowest_rank  = null;
 
@@ -156,7 +177,7 @@ namespace Haggis\Cards
       return $this->number_of_suits == $count;
     }
 
-    private function may_be_a_wild_singleton_or_a_wild_bomb() {
+    private function may_be_wild_singleton_or_wild_bomb() {
       extract(WILD_CARDS); // either combo has only wild cards or...
       $JACK  = isset( $this->cards_by_suit[SUITS['WILD']][$JACK] )  ? $JACK  : 0;
       $QUEEN = isset( $this->cards_by_suit[SUITS['WILD']][$QUEEN] ) ? $QUEEN : 0;
@@ -175,7 +196,7 @@ namespace Haggis\Cards
                     'nbr'=>$this->number_of_cards, 'display'=>$this->default_display );
     }
 
-    private function could_possibly_be_a_rainbow_or_a_suited_bomb() {
+    private function could_be_rainbow_or_suited_bomb() {
       return $this->has_four_cards_in_one_suit_or_four_suits_with_no_wild_cards()
           && $this->has_only_one(3) && $this->has_only_one(5)
           && $this->has_only_one(7) && $this->has_only_one(9);
@@ -198,19 +219,19 @@ namespace Haggis\Cards
       return count($this->cards_by_rank[ $of_this_rank ]) == 1;
     }
 
-    private function may_be_a_rainbow_or_a_suited_bomb() {
+    private function may_be_rainbow_or_suited_bomb() {
       list($RAINBOW_BOMB, $SUITED_BOMB) = array(1,6);
       $bomb_value = $this->suit_count_is(4) ? $RAINBOW_BOMB : $SUITED_BOMB;
       return array( 'type'=>'bomb', 'value'=>$bomb_value, 'serienbr'=>$this->number_of_suits,
                     'nbr'=>$this->number_of_cards, 'display'=>$this->default_display );
     }
 
-    private function may_be_a_set_with_a_value_of($set_value) {
+    private function may_be_set_with_value($set_value) {
       return array( 'type'=>'set', 'value'=>$set_value, 'serienbr'=>$this->number_of_suits,
                     'nbr'=>$this->number_of_cards, 'display'=>$this->default_display );
     }
 
-    private function could_possibly_be_a_sequence_with_these_dimensions($length, $width, $rank) {
+    private function could_be_sequence_with_dimensions($length, $width, $rank) {
       return $this->has_enough_cards_to_form_a_sequence_of_width($width)
           && $this->card_count_is($length * $width)
           && $this->has_enough_suits_to_cover_sequence_width($width)
@@ -246,9 +267,14 @@ namespace Haggis\Cards
       return ($number_of_wilds_used == $this->number_of_wilds_available);
     }
 
-    private function may_be_a_sequence_with_these_attributes($width, $rank) {
-      return array( 'type'=>'sequence', 'value'=>$rank, 'serienbr'=>$width,
-                    'nbr'=>$this->number_of_cards, 'display'=>$this->card_display_order );
+    private function may_be_sequence_with_dimensions($width, $rank) {
+      return 
+        array( 'type' => 'sequence'
+             , 'value' => $rank
+             , 'serienbr' => $width
+             , 'nbr' => $this->number_of_cards
+             , 'display' => $this->card_display_order 
+             );
     }
 
 
@@ -267,7 +293,7 @@ namespace Haggis\Cards
       };
 
 
-      $this->group_cards_by_suit_and_by_rank($cards); // we can use this to gather up all of the point cards then
+      $this->group_cards_by_suit_and_rank($cards); // we can use this to gather up all of the point cards then
       list($threes, $fives, $sevens, $nines) = array_map("array_keys", $pluck( POINT_CARDS, $this->cards_by_rank ));
       $point_card_combos = $zip($threes, $zip($fives, $zip($sevens, $nines))); // get all the combinations of the 4 point cards
       $maybe_bombs = array_map("array_unique", $point_card_combos);            // and finally squeeze out any duplicate suits
@@ -281,16 +307,6 @@ namespace Haggis\Cards
 
     }
 
-    private $cards_ = null;
-    private $lowest_rank = 0;
-    private $cards_by_suit = array();
-    private $cards_by_rank = array();
-    private $wild_cards_ids = array();
-    private $number_of_suits = 0;
-    private $number_of_cards = 0;
-    private $default_display = array();
-    private $card_display_order = array();
-    private $number_of_wilds_available = 0;
 
   }// end class Combo
 
