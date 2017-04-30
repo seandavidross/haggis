@@ -111,7 +111,6 @@ describe("Combo", function() {
 
         $this->combo = new Combo($single);
 
-        // until we remove $cards from method signature, we still need to pass it...
         $this->possibles = 
           $this
             ->combo
@@ -269,5 +268,8 @@ describe("Combo", function() {
 
 
 });
+
+// REFACTOR: There's a lot of duplication.
+// Q: How do I make helper methods in Kahlan?
 
 ?>
