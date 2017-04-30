@@ -58,7 +58,7 @@ namespace Haggis\Cards
     
     private function prepare_to_analyze_($cards) 
     {
-      $this->check_all_cards_belong_to_active_player_($cards);
+      static::check_all_cards_belong_to_active_player_($cards);
 
       $this->group_cards_by_suit_and_rank_($cards);
 
@@ -87,6 +87,7 @@ namespace Haggis\Cards
     private function could_be_wild_single_or_wild_bomb_() 
     {
       $this->possibles[] = $this->may_be_wild_single_or_wild_bomb_();
+      
       return $this->possibles;
     }
 
@@ -104,6 +105,7 @@ namespace Haggis\Cards
     private function could_be_rainbow_or_suited_bomb_() 
     {
       $this->possibles[] = $this->may_be_rainbow_or_suited_bomb_();
+
       return $this->possibles;
     }
 
@@ -145,16 +147,16 @@ namespace Haggis\Cards
   // the class that will call #get_possible_combinations, this class shouldn't care
   // about who has the cards or where they came from, it only needs to
   // know if the cards form valid Haggis combinations or not...
-    private function check_all_cards_belong_to_active_player_($cards)
+    private static function check_all_cards_belong_to_active_player_($cards)
     {
       foreach( $cards as $card )
       {
-        if($this->does_not_belong_to_active_player_($card))
+        if(static::does_not_belong_to_active_player_($card))
           throw new CardNotInHand('Card is not in your hand');
       }
     }
 
-    private function does_not_belong_to_active_player_($card) 
+    private static function does_not_belong_to_active_player_($card) 
     {
       return $card['location'] != 'hand' 
           || $card['location_arg'] != static::get_active_player_id_();
@@ -183,7 +185,8 @@ namespace Haggis\Cards
       
         $this->cards_by_rank[ $rank_of_($card) ][ $suit_of_($card) ] = $card['id'];
         
-        if( $suit_of_($card) == SUITS['WILD'] ) $this->wild_cards_ids[] = $card['id'];
+        if( $suit_of_($card) == SUITS['WILD'] ) 
+          $this->wild_cards_ids[] = $card['id'];
       }
     }
 
