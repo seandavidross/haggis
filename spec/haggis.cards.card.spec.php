@@ -22,7 +22,6 @@ describe("Card", function() {
 
       expect($creating_a_card_with_an_invalid_suit)
         ->toThrow(new InvalidSuit());
-
     });
 
 
@@ -34,7 +33,6 @@ describe("Card", function() {
 
       expect($creating_a_card_with_a_null_suit)
         ->toThrow(new TypeError());
-
     });
 
 
@@ -46,7 +44,6 @@ describe("Card", function() {
 
       expect($creating_a_card_with_an_invalid_rank)
         ->toThrow(new InvalidRank());
-
     });
 
 
@@ -62,7 +59,6 @@ describe("Card", function() {
 
       expect($creating_a_card_with_an_invalid_owner)
         ->toThrow(new InvalidOwner());
-
     });
 
 
@@ -78,7 +74,6 @@ describe("Card", function() {
 
       expect($creating_a_card_with_an_invalid_location)
         ->toThrow(new InvalidLocation());
-
     });
 
 
@@ -94,7 +89,6 @@ describe("Card", function() {
 
       expect($creating_a_card_with_an_invalid_position)
         ->toThrow(new InvalidPosition());
-
     });
 
 
@@ -110,47 +104,41 @@ describe("Card", function() {
 
       expect($creating_a_card_with_an_negative_position)
         ->toThrow(new InvalidPosition());
-
     });
 
   });
 
 
-  describe("#with_owner", function() {
+  describe("#change_owner", function() {
     
     beforeEach(function() {
-      
       $this->red_eight = new 
         Card( Haggis\Cards\SUITS['RED']
             , Haggis\Cards\RANKS['8']
             , array('owner' => Haggis\Cards\OWNERS['FOREHAND'])
-            );
-
-      $this->red_8_clone = 
-        $this
-          ->red_eight
-          ->with_owner(Haggis\Cards\OWNERS['MIDDLEHAND']);
-    
+            );    
     });
 
 
-    it("should return a clone with a new owner", function() {
-
-      expect( $this->red_eight->suit() )
-        ->toBe( $this->red_8_clone->suit() );
-
-      expect( $this->red_eight->rank() )
-        ->toBe( $this->red_8_clone->rank() );
-      
-      expect( $this->red_eight->location() )
-        ->toBe( $this->red_8_clone->location() );
-
-      expect( $this->red_eight->position() )
-        ->toBe( $this->red_8_clone->position() );
+    it("should change when owner is valid", function() {
+      $this
+          ->red_eight
+          ->change_owner(Haggis\Cards\OWNERS['MIDDLEHAND']);
 
       expect( $this->red_eight->owner() )
-        ->not
-        ->toBe( $this->red_8_clone->owner() );
+        ->toBe( Haggis\Cards\OWNERS['MIDDLEHAND'] );
+    });
+
+
+    it("should fail to change when owner is invalid", function() {
+      
+      $change_with_invalid_owner = function() {
+        
+        $this->red_eight->change_owner(-1);
+      
+      };
+
+      expect($change_with_invalid_owner)->toThrow(new InvalidOwner());
 
     });
 

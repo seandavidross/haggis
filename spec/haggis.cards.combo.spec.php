@@ -13,8 +13,10 @@ use Haggis\Exception\EmptyCombination as EmptyCombination;
 const SUITS = Haggis\Cards\SUITS;
 const RANKS = Haggis\Cards\RANKS;
 
-global $RED_FIVE;
+global $RED_FIVE, $WILD_KING;
+
 $RED_FIVE = new Card( SUITS['RED'], RANKS['5'] );
+$WILD_KING = new Card( SUITS['WILD'], RANKS['K'] );
 
 
 describe("Combo", function() {
@@ -58,33 +60,66 @@ describe("Combo", function() {
     context("with a single non-wild card", function() {
       
       beforeEach(function() {
-        $singleton = $GLOBALS['RED_FIVE']->to_hash();
+        $single = $GLOBALS['RED_FIVE']->to_hash();
 
-        $this->combo_ = new Combo( array($singleton) );
+        $this->combo = new Combo( array($single) );
 
         // until we remove $cards from method signature, we still need to pass it...
-        $this->possibles_ 
+        $this->possibles 
           = $this
-              ->combo_
-              ->get_possible_combinations( array($singleton) );
+              ->combo
+              ->get_possible_combinations( array($single) );
       });
 
       
       it("should return only one possibility", function() {
-        expect(count($this->possibles_))->toBe(1); 
+        expect(count($this->possibles))->toBe(1); 
       });
 
 
       it("should return a set", function() {
-        expect($this->possibles_[0]['type'])->toBe('set');
+        expect($this->possibles[0]['type'])->toBe('set');
       });
 
       
       it("should be a singleton", function() {
-        expect($this->possibles_[0]['nbr'])->toBe(1);
+        expect($this->possibles[0]['nbr'])->toBe(1);
       });
 
     });
+
+
+    context("with a single wild card", function() {
+      
+      beforeEach(function() {
+        $single = $GLOBALS['WILD_KING']->to_hash();
+
+        $this->combo = new Combo( array($single) );
+
+        // until we remove $cards from method signature, we still need to pass it...
+        $this->possibles 
+          = $this
+              ->combo
+              ->get_possible_combinations( array($single) );
+      });
+
+      
+      it("should return only one possibility", function() {
+        expect(count($this->possibles))->toBe(1); 
+      });
+
+
+      it("should return a set", function() {
+        expect($this->possibles[0]['type'])->toBe('set');
+      });
+
+      
+      it("should be a singleton", function() {
+        expect($this->possibles[0]['nbr'])->toBe(1);
+      });
+
+    });
+
 
   });
 

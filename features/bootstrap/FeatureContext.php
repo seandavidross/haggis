@@ -63,7 +63,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   */
   public function a_card_that_does_not_belong_to_me()
   {
-    $not_my_card = $this->create_card_(1,2);
+    $not_my_card = $this->create_card_('ORANGE', '2');
     $not_my_card['location_arg'] = 2; // I am at location_arg == 1
     $this->cards = array($not_my_card);
   }
@@ -87,7 +87,12 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
 
   private function create_card_($suit, $rank)
   {
-    return array('id'=>1, 'location'=>'hand', 'location_arg'=>1, 'type'=>$suit, 'type_arg'=>$rank);
+    return 
+      array( 'id' => 1
+           , 'location' => 'hand'
+           , 'location_arg' => 1
+           , 'type' => SUITS[$suit]
+           , 'type_arg' => RANKS[$rank]);
   }
 
   /**

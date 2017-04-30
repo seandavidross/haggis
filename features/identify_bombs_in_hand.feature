@@ -23,10 +23,10 @@ Feature: Identify bombs in hand
     And a suited bomb will be found is <suited> 
   
   Examples:
-      |s1|r1|s2|r2|s3|r3|s4|r4|s5|r5|s6|r6|s7|r7|s8|r8|s9|r9|s10|r10|s11|r11|s12|r12|s13|r13|s14|r14|rainbow| suited|
-      | 1| 3| 1| 5| 1| 7| 1| 9| 2| 5| 3| 7| 4| 9| 2| 3| 3| 5| 4 | 7 | 2 | 9 | 4 | 5 | 4 | 3 | 3 | 9 | 'true'| 'true'|
-      | 1| 2| 1| 4| 1| 6| 1| 8| 2| 2| 3| 4| 4| 8| 2|10| 3|10| 4 | 10| 2 | 8 | 4 | 6 | 4 | 3 | 3 | 9 |'false'|'false'|
-      | 1| 3| 2| 5| 3| 7| 4| 9| 1| 2| 1| 4| 1| 6| 1| 8| 2| 2| 3 | 4 | 4 | 8 | 2 |10 | 3 |10 | 4 | 10| 'true'|'false'|
-      | 1| 3| 1| 5| 1| 7| 1| 9| 1| 2| 1| 4| 1| 6| 1| 8| 2| 2| 3 | 4 | 4 | 8 | 2 |10 | 3 |10 | 4 | 10|'false'| 'true'|
-      | 1| 3| 1| 5| 1| 7| 1| 9| 2| 3| 2| 5| 2| 7| 2| 9| 3| 3| 3 | 5 | 3 | 7 | 3 | 9 | 4 | 2 | 4 | 10|'false'| 'true'|
+      | s1       | r1 | s2       | r2  | s3       | r3  | s4       | r4  | s5       | r5  | s6       | r6  | s7       | r7  | s8       | r8  | s9       |r9   | s10     | r10 | s11      | r11 | s12      | r12 | s13     | r13 | s14     | r14 | rainbow | suited  |
+      | 'ORANGE' | '3'| 'ORANGE' | '5' | 'ORANGE' | '7' | 'ORANGE' | '9' | 'YELLOW' | '5' | 'GREEN'  | '7' | 'BLUE'   | '9' | 'YELLOW' | '3' | 'GREEN'  | '5' | 'BLUE'  | '7' | 'YELLOW' | '9' | 'BLUE'   | '5' | 'BLUE'  | '3' | 'GREEN' | '9' | 'true'  | 'true'  |
+      | 'ORANGE' | '2'| 'ORANGE' | '4' | 'ORANGE' | '6' | 'ORANGE' | '8' | 'YELLOW' | '2' | 'GREEN'  | '4' | 'BLUE'   | '8' | 'YELLOW' | 'T' | 'GREEN'  | 'T' | 'BLUE'  | 'T' | 'YELLOW' | '8' | 'BLUE'   | '6' | 'BLUE'  | '3' | 'GREEN' | '9' | 'false' | 'false' |
+      | 'ORANGE' | '3'| 'YELLOW' | '5' | 'GREEN'  | '7' | 'BLUE'   | '9' | 'ORANGE' | '2' | 'ORANGE' | '4' | 'ORANGE' | '6' | 'ORANGE' | '8' | 'YELLOW' | '2' | 'GREEN' | '4' | 'BLUE'   | '8' | 'YELLOW' | 'T' | 'GREEN' | 'T' | 'BLUE'  | 'T' | 'true'  | 'false' |
+      | 'ORANGE' | '3'| 'ORANGE' | '5' | 'ORANGE' | '7' | 'ORANGE' | '9' | 'ORANGE' | '2' | 'ORANGE' | '4' | 'ORANGE' | '6' | 'ORANGE' | '8' | 'YELLOW' | '2' | 'GREEN' | '4' | 'BLUE'   | '8' | 'YELLOW' | 'T' | 'GREEN' | 'T' | 'BLUE'  | 'T' | 'false' | 'true'  |
+      | 'ORANGE' | '3'| 'ORANGE' | '5' | 'ORANGE' | '7' | 'ORANGE' | '9' | 'YELLOW' | '3' | 'YELLOW' | '5' | 'YELLOW' | '7' | 'YELLOW' | '9' | 'GREEN'  | '3' | 'GREEN' | '5' | 'GREEN'  | '7' | 'GREEN'  | '9' | 'BLUE'  | '2' | 'BLUE'  | 'T' | 'false' | 'true'  |
        

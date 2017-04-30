@@ -78,7 +78,7 @@ namespace Haggis\Cards
       $this->count_the_number_of_suits_in($cards);
       $this->default_display = $this->arrange_cards_by_id( $cards );
       $this->number_of_cards = count($cards);
-      $this->number_of_wilds_available = count( $this->cards_by_suit['wild'] );
+      $this->number_of_wilds_available = count( $this->cards_by_suit[SUITS['WILD']] );
     }
 
   // The following 3 methods probably belong in the controller class,
@@ -116,7 +116,7 @@ namespace Haggis\Cards
       foreach( $cards as $card ) {
         $this->cards_by_suit[ $suit_of($card) ][ $rank_of($card) ] = $card['id'];
         $this->cards_by_rank[ $rank_of($card) ][ $suit_of($card) ] = $card['id'];
-        if( $suit_of($card) == 'wild' )
+        if( $suit_of($card) == SUITS['WILD'] )
           $this->wild_cards_ids[] = $card['id'];
       }
     }
@@ -125,7 +125,7 @@ namespace Haggis\Cards
       $this->number_of_suits = 0;
 
       foreach( $this->cards_by_suit as $suit => $cards ) {
-        if( $suit !== 'wild' && count( $cards ) > 0 )
+        if( $suit !== SUITS['WILD'] && count( $cards ) > 0 )
           $this->number_of_suits++;
       }
     }
@@ -140,7 +140,7 @@ namespace Haggis\Cards
       $lowest_rank  = null;
 
       foreach( $this->cards_by_suit as $suit => $cards_in_this_suit ) {
-        if( $suit !== 'wild' && count($cards_in_this_suit) > 0 ) {
+        if( $suit !== SUITS['WILD'] && count($cards_in_this_suit) > 0 ) {
           foreach( $cards_in_this_suit as $rank => $dummy ) {
             $highest_rank = max( $rank, $highest_rank );
             $lowest_rank  = ($lowest_rank == null) ? $rank: min($rank, $lowest_rank);
@@ -158,9 +158,9 @@ namespace Haggis\Cards
 
     private function may_be_a_wild_singleton_or_a_wild_bomb() {
       extract(WILD_CARDS); // either combo has only wild cards or...
-      $JACK  = isset( $this->cards_by_suit['wild'][$JACK] )  ? $JACK  : 0;
-      $QUEEN = isset( $this->cards_by_suit['wild'][$QUEEN] ) ? $QUEEN : 0;
-      $KING  = isset( $this->cards_by_suit['wild'][$KING] )  ? $KING  : 0;
+      $JACK  = isset( $this->cards_by_suit[SUITS['WILD']][$JACK] )  ? $JACK  : 0;
+      $QUEEN = isset( $this->cards_by_suit[SUITS['WILD']][$QUEEN] ) ? $QUEEN : 0;
+      $KING  = isset( $this->cards_by_suit[SUITS['WILD']][$KING] )  ? $KING  : 0;
 
       $combo_value = $JACK + $QUEEN + $KING; // {0,11,12,13,23,24,25,36}
       // ... there are no cards in the combo at all...

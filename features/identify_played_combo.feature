@@ -16,7 +16,7 @@ Feature: Identify played combo
     Then it should fail with error 'Card is not in your hand'
 
   Scenario: A single card is played
-    Given a card with suit '1' and rank '2'
+    Given a card with suit "ORANGE" and rank "2"
     When the analyzer is run
     Then there should be '1' combo
       And the combo type should be "set"
@@ -35,10 +35,10 @@ Feature: Identify played combo
     
     Examples:
         | first_suit  | first_rank  | second_suit | second_rank | valid_combos  | combo_type  | combo_size  |
-        | 1           | 2           | 2           | 2           | 1             | 'set'       | 2           |
-        | 'wild'      | 11          | 2           | 2           | 1             | 'set'       | 2           |
-        | 'wild'      | 11          | 'wild'      | 12          | 1             | 'bomb'      | 2           | 
-        | 1           | 2           | 2           | 3           | 0             | 'null'      | 'null'      |
+        | 'ORANGE'    | '2'         | 'YELLOW'    | '2'         | 1             | 'set'       | 2           |
+        | 'WILD'      | 'J'         | 'YELLOW'    | '2'         | 1             | 'set'       | 2           |
+        | 'WILD'      | 'J'         | 'WILD'      | 'Q'         | 1             | 'bomb'      | 2           | 
+        | 'ORANGE'    | '2'         | 'YELLOW'    | '3'         | 0             | 'null'      | 'null'      |
         
   Scenario Outline: Three cards are played
   Given a card with suit <s1> and rank <r1>
@@ -51,14 +51,14 @@ Feature: Identify played combo
     And the display size should be <combo_size>
 
     Examples:
-        | s1    | r1  | s2    | r2  | s3    | r3  | valid_combos  | combo_type        | combo_size  |
-        | 1     | 2   | 2     | 2   | 3     | 2   | 1             | 'set'             | 3           |
-        | 1     | 2   | 1     | 3   | 1     | 4   | 1             | 'sequence'        | 3           |
-        |'wild' | 11  |'wild' | 12  |'wild' | 13  | 1             | 'bomb'            | 3           |
-        |'wild' | 11  | 1     | 3   | 2     | 3   | 1             | 'set'             | 3           |
-        |'wild' | 11  |'wild' | 12  | 1     | 3   | 2             | 'vague'           | 3           |
-        |'wild' | 11  |'wild' | 12  |'wild' | 13  | 1             | 'bomb'            | 3           | 
-        |'wild' | 11  | 1     | 2   | 2     | 3   | 0             | 'null'            | 'null'      |
+        | s1       | r1  | s2       | r2  | s3       | r3  | valid_combos  | combo_type        | combo_size  |
+        | 'ORANGE' | '2' | 'YELLOW' | '2' | 'GREEN'  | '2' | 1             | 'set'             | 3           |
+        | 'ORANGE' | '2' | 'ORANGE' | '3' | 'ORANGE' | '4' | 1             | 'sequence'        | 3           |
+        | 'WILD'   | 'J' | 'WILD'   | 'Q' | 'WILD'   | 'K' | 1             | 'bomb'            | 3           |
+        | 'WILD'   | 'J' | 'ORANGE' | '3' | 'YELLOW' | '3' | 1             | 'set'             | 3           |
+        | 'WILD'   | 'J' | 'WILD'   | 'Q' | 'ORANGE' | '3' | 2             | 'vague'           | 3           |
+        | 'WILD'   | 'J' | 'WILD'   | 'Q' | 'WILD'   | 'K' | 1             | 'bomb'            | 3           | 
+        | 'WILD'   | 'J' | 'ORANGE' | '2' | 'YELLOW' | '3' | 0             | 'null'            | 'null'      |
 
   Scenario Outline: Four cards are played
   Given a card with suit <s1> and rank <r1>
@@ -73,17 +73,17 @@ Feature: Identify played combo
     # 3rd & 4th examples are suited and rainbow bombs, respectively
     # the 2nd last example could be a set, a sequence, or a sequence of pairs.
   Examples:
-        | s1    | r1  | s2    | r2  | s3    | r3  | s4  | r4  | valid_combos  | combo_type        | combo_size  |
-        | 1     | 2   | 2     | 2   | 3     | 2   | 4   | 2   | 1             | 'set'             | 4           |
-        | 1     | 2   | 1     | 3   | 1     | 4   | 1   | 5   | 1             | 'sequence'        | 4           |
-        | 1     | 3   | 1     | 5   | 1     | 7   | 1   | 9   | 1             | 'bomb'            | 4           |
-        | 1     | 3   | 2     | 5   | 3     | 7   | 4   | 9   | 1             | 'bomb'            | 4           |       
-        |'wild' | 11  | 1     | 3   | 2     | 3   | 4   | 3   | 1             | 'set'             | 4           |
-        |'wild' | 11  |'wild' | 12  | 1     | 3   | 3   | 3   | 2             | 'vague'           | 4           |
-        |'wild' | 11  |'wild' | 12  |'wild' | 13  | 1   | 5   | 3             | 'vague'           | 4           | 
-        |'wild' | 11  | 1     | 2   | 2     | 3   | 4   | 4   | 0             | 'null'            | 'null'      |
-        | 1     | 2   | 2     | 2   | 1     | 3   | 2   | 3   | 1             | 'sequence'        | 4           |
-        | 1     | 2   | 2     | 2   | 1     | 3   | 3   | 3   | 0             | 'null'            | 'null'      |       
+        | s1       | r1  | s2       | r2  | s3       | r3  | s4       | r4  | valid_combos  | combo_type        | combo_size  |
+        | 'ORANGE' | '2' | 'YELLOW' | '2' | 'GREEN'  | '2' | 'BLUE'   | '2' | 1             | 'set'             | 4           |
+        | 'ORANGE' | '2' | 'ORANGE' | '3' | 'ORANGE' | '4' | 'ORANGE' | '5' | 1             | 'sequence'        | 4           |
+        | 'ORANGE' | '3' | 'ORANGE' | '5' | 'ORANGE' | '7' | 'ORANGE' | '9' | 1             | 'bomb'            | 4           |
+        | 'ORANGE' | '3' | 'YELLOW' | '5' | 'GREEN'  | '7' | 'BLUE'   | '9' | 1             | 'bomb'            | 4           |       
+        | 'WILD'   | 'J' | 'ORANGE' | '3' | 'YELLOW' | '3' | 'BLUE'   | '3' | 1             | 'set'             | 4           |
+        | 'WILD'   | 'J' | 'WILD'   | 'Q' | 'ORANGE' | '3' | 'GREEN'  | '3' | 2             | 'vague'           | 4           |
+        | 'WILD'   | 'J' | 'WILD'   | 'Q' | 'WILD'   | 'K' | 'ORANGE' | '5' | 3             | 'vague'           | 4           | 
+        | 'WILD'   | 'J' | 'ORANGE' | '2' | 'YELLOW' | '3' | 'BLUE'   | '4' | 0             | 'null'            | 'null'      |
+        | 'ORANGE' | '2' | 'YELLOW' | '2' | 'ORANGE' | '3' | 'YELLOW' | '3' | 1             | 'sequence'        | 4           |
+        | 'ORANGE' | '2' | 'YELLOW' | '2' | 'ORANGE' | '3' | 'GREEN'  | '3' | 0             | 'null'            | 'null'      |       
 
 
     # As a characteristic test, determining how the existing code works, 
@@ -112,6 +112,6 @@ Feature: Identify played combo
       And the display size should be <combo_size>
     
     Examples:
-        | s1| r1| s2| r2| s3| r3| s4| r4| s5| r5| s6| r6| s7| r7| s8| r8| s9| r9| s10| r10| s11| r11| s12| r12| s13| r13| s14| r14| s15| r15|valid_combos|combo_type|combo_size |
-        | 1 | 2 | 2 | 2 | 3 | 2 | 4 | 2 | 5 | 2 | 1 | 3 | 2 | 3 | 3 | 3 | 4 | 3 | 5  | 3  | 1  | 4  | 2  | 4  | 3  | 4  | 4  | 4  | 5  | 4  | 1          |'sequence'| 15        |
+        | s1       | r1  | s2       | r2  | s3      | r3  | s4     | r4  | s5    | r5  | s6       | r6  | s7       | r7  | s8      | r8  | s9     | r9  | s10    | r10  | s11       | r11  | s12       | r12  | s13      | r13  | s14     | r14  | s15    | r15  | valid_combos | combo_type | combo_size |
+        | 'ORANGE' | '2' | 'YELLOW' | '2' | 'GREEN' | '2' | 'BLUE' | '2' | 'RED' | '2' | 'ORANGE' | '3' | 'YELLOW' | '3' | 'GREEN' | '3' | 'BLUE' | '3' | 'RED'  | '3'  | 'ORANGE'  | '4'  | 'YELLOW'  | '4'  | 'GREEN'  | '4'  | 'BLUE'  | '4'  | 'RED'  | '4'  | 1            | 'sequence' | 15         |
              
