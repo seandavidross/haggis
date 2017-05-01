@@ -20,13 +20,13 @@ namespace Haggis\Cards
 
       $this->cards = $cards;
       $this->lowest_rank = 0;
-      $this->possibles = array();
+      $this->combinations = array();
       $this->cards_by_suit = array();
       $this->cards_by_rank = array();
       $this->wild_card_ids = array();
       $this->default_display = array();
       $this->display_order = array();
-      $this->has_cached_possibles = false;
+      $this->has_cached_combinations = false;
       $this->number_of_wilds_available = 0;      
     }
 
@@ -40,8 +40,8 @@ namespace Haggis\Cards
     //  ... or null if this is an invalid combo
     function get_possible_combinations($cards)
     {
-      if( $this->has_cached_possibles )
-        return $this->possibles;
+      if( $this->has_cached_combinations )
+        return $this->combinations;
 
       $this->prepare_to_analyze_($cards);
 
@@ -70,8 +70,8 @@ namespace Haggis\Cards
       $this->number_of_wilds_available 
         = count( $this->cards_by_suit[SUITS['WILD']] );
 
-      $this->possibles = array();
-      $this->has_cached_possibles = true;
+      $this->combinations = array();
+      $this->has_cached_combinations = true;
     }
 
 
@@ -156,9 +156,9 @@ namespace Haggis\Cards
 
     private function could_be_wild_single_or_wild_bomb_() 
     {
-      $this->possibles[] = $this->may_be_wild_single_or_wild_bomb_();
+      $this->combinations[] = $this->may_be_wild_single_or_wild_bomb_();
       
-      return $this->possibles;
+      return $this->combinations;
     }
 
     private function may_be_wild_single_or_wild_bomb_() 
@@ -230,9 +230,9 @@ namespace Haggis\Cards
 
     private function could_be_rainbow_or_suited_bomb_() 
     {
-      $this->possibles[] = $this->may_be_rainbow_or_suited_bomb_();
+      $this->combinations[] = $this->may_be_rainbow_or_suited_bomb_();
 
-      return $this->possibles;
+      return $this->combinations;
     }
 
     private function may_be_rainbow_or_suited_bomb_() 
@@ -260,7 +260,7 @@ namespace Haggis\Cards
         = $this->find_highest_and_lowest_ranks_();
       
       if( $lowest_rank == $highest_rank )
-        $this->possibles[] = $this->may_be_set_of_value_($lowest_rank);
+        $this->combinations[] = $this->may_be_set_of_value_($lowest_rank);
 
       // a sequence is two or more consecutively ranked sets, e.g., 6-6-6-7-7-7,
       // and this particular sequence would have a length of 2 (consectuve ranks),
@@ -270,10 +270,10 @@ namespace Haggis\Cards
         $maybe_sequence = $this->may_be_sequence_of_width_($width);
         
         if( !empty($maybe_sequence) ) 
-          $this->possibles[] = $maybe_sequence;
+          $this->combinations[] = $maybe_sequence;
       }
 
-      return $this->possibles;
+      return $this->combinations;
     }
 
     private function find_highest_and_lowest_ranks_() 
