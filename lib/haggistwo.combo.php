@@ -399,9 +399,9 @@ namespace Haggis\Cards
           return 
             array_map( function($n) use($x) { 
                         return array_merge((array)$x, (array)$n); 
-                      }
-                    , $xs
-                    );
+                       }
+                     , $xs
+                     );
         };
 
       $zip_ = 
