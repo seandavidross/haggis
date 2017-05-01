@@ -60,7 +60,6 @@ namespace Haggis\Cards
       static::check_all_cards_belong_to_active_player_($cards);
 
       $this->group_cards_by_suit_and_rank_($cards);
-
       $this->count_suits_($cards);
 
       $this->default_display 
@@ -72,7 +71,6 @@ namespace Haggis\Cards
         = count( $this->cards_by_suit[SUITS['WILD']] );
 
       $this->possibles = array();
-
       $this->has_cached_possibles = true;
     }
 
@@ -189,11 +187,9 @@ namespace Haggis\Cards
       extract(WILD_CARDS);
       $wilds = $this->cards_by_suit[SUITS['WILD']];
       
-      $JACK = isset($wilds[$JACK]) ? $JACK  : 0;
-      
+      $JACK  = isset($wilds[$JACK])  ? $JACK  : 0;
       $QUEEN = isset($wilds[$QUEEN]) ? $QUEEN : 0;
-      
-      $KING  = isset($wilds[$KING]) ? $KING  : 0;
+      $KING  = isset($wilds[$KING])  ? $KING  : 0;
 
       return $JACK + $QUEEN + $KING; // {0,11,12,13,23,24,25,36}
     }
@@ -292,7 +288,6 @@ namespace Haggis\Cards
           foreach( $cards as $rank => $ignore ) 
           {
             $highest_rank = max( $rank, $highest_rank );
-
             $lowest_rank = ($lowest_rank == null) ? $rank : min($rank, $lowest_rank);
           }
         }
@@ -317,7 +312,6 @@ namespace Haggis\Cards
     private function may_be_sequence_of_width_($width)
     {
       $length = floor( $this->number_of_cards / $width );
-
       $rank = $this->lowest_rank + $length - 1;
 
       return
@@ -393,65 +387,23 @@ namespace Haggis\Cards
 
     // Check if there is a possibility to play a rainbow / uniform bomb among current set of cards
     function detect_bombs( $cards ) 
-    { 
-      $inject_ = 
-        function($x, $xs) {
-          return 
-            array_map( function($n) use($x) { 
-                        return array_merge((array)$x, (array)$n); 
-                       }
-                     , $xs
-                     );
-        };
-
-      $zip_ = 
-        function($xs, $ys) use($inject_) {
-          return 
-            array_reduce( $xs
-                        , function($x, $y) use($ys, $inject_) { 
-                            return array_merge($x, $inject_($y, $ys));  
-                          }   
-                        , array()
-                        );
-        };
-
-      $pluck_ = 
-        function($keys, $vs) {
-          return 
-            array_map( function($k) use($vs) { 
-                        return $vs[$k]; 
-                      }
-                     , $keys
-                     );
-        };
-
+    { // some helper lambdas...
+      $inject_ = function($x, $xs) { return array_map( function($n) use($x) { return array_merge((array)$x, (array)$n); }, $xs);};
+      $zip_ = function($xs, $ys) use($inject_) { return array_reduce( $xs, function($x, $y) use($ys, $inject_) { return array_merge($x, $inject_($y, $ys)); }, array() ); };
+      $pluck_ = function($keys, $vs) { return array_map( function($k) use($vs) { return $vs[$k]; }, $keys);};
 
       $this->group_cards_by_suit_and_rank_($cards); // we can use this to gather up all of the point cards then
-      
-      list($threes, $fives, $sevens, $nines) 
-        = array_map("array_keys", $pluck_( POINT_CARDS, $this->cards_by_rank ));
-      
+      list($threes, $fives, $sevens, $nines) = array_map("array_keys", $pluck_( POINT_CARDS, $this->cards_by_rank ));
       $point_card_combos = $zip_($threes, $zip_($fives, $zip_($sevens, $nines))); // get all the combinations of the 4 point cards
-      
       $maybe_bombs = array_map("array_unique", $point_card_combos); // and finally squeeze out any duplicate suits
 
-      $has_bomblike_with_suit_count_ = 
-        function($c) use($maybe_bombs) {
-          $bomblike = 
-            array_filter( $maybe_bombs
-                        , function($bs) use($c) {
-                            return count($bs) == $c;
-                          }
-                        );
-          
-          return count($bomblike) > 0;
-        };
+      // another helper lambda...
+      $has_bomblike_with_suit_count_ = function($c) use($maybe_bombs) { $bomblike = array_filter( $maybe_bombs, function($bs) use($c) { return count($bs) == $c; } ); return count($bomblike) > 0; };
       
       return 
         array( 'rainbow' => $has_bomblike_with_suit_count_(4)
              , 'suited' => $has_bomblike_with_suit_count_(1)
              );
-
     }
 
     
