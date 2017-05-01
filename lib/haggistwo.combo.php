@@ -394,33 +394,36 @@ namespace Haggis\Cards
     // Check if there is a possibility to play a rainbow / uniform bomb among current set of cards
     function detect_bombs( $cards ) 
     { 
-      $inject_ = function($x, $xs) {
-        return 
-          array_map( function($n) use($x) { 
-                       return array_merge((array)$x, (array)$n); 
-                     }
-                   , $xs
-                   );
-      };
+      $inject_ = 
+        function($x, $xs) {
+          return 
+            array_map( function($n) use($x) { 
+                        return array_merge((array)$x, (array)$n); 
+                      }
+                    , $xs
+                    );
+        };
 
-      $zip_ = function($xs, $ys) use($inject_) {
-        return 
-          array_reduce( $xs
-                      , function($x, $y) use($ys, $inject_) { 
-                          return array_merge($x, $inject_($y, $ys));  
-                        }   
-                      , array()
-                      );
-      };
+      $zip_ = 
+        function($xs, $ys) use($inject_) {
+          return 
+            array_reduce( $xs
+                        , function($x, $y) use($ys, $inject_) { 
+                            return array_merge($x, $inject_($y, $ys));  
+                          }   
+                        , array()
+                        );
+        };
 
-      $pluck_ = function($keys, $vs) {
-        return 
-          array_map( function($k) use($vs) { 
-                       return $vs[$k]; 
-                     }
-                   , $keys
-                   );
-      };
+      $pluck_ = 
+        function($keys, $vs) {
+          return 
+            array_map( function($k) use($vs) { 
+                        return $vs[$k]; 
+                      }
+                     , $keys
+                     );
+        };
 
 
       $this->group_cards_by_suit_and_rank_($cards); // we can use this to gather up all of the point cards then
@@ -432,13 +435,21 @@ namespace Haggis\Cards
       
       $maybe_bombs = array_map("array_unique", $point_card_combos); // and finally squeeze out any duplicate suits
 
-      $has_set_with_distinct_suits_ = function($n) use($maybe_bombs) {
-        return count(array_filter($maybe_bombs, function($b) use($n) {return count($b) == $n;})) > 0;
-      };
+      $has_bomblike_with_suit_count_ = 
+        function($c) use($maybe_bombs) {
+          $bomblike = 
+            array_filter( $maybe_bombs
+                        , function($bs) use($c) {
+                            return count($bs) == $c;
+                          }
+                        );
+          
+          return count($bomblike) > 0;
+        };
       
       return 
-        array( 'rainbow' => $has_set_with_distinct_suits_(4)
-             , 'suited' => $has_set_with_distinct_suits_(1)
+        array( 'rainbow' => $has_bomblike_with_suit_count_(4)
+             , 'suited' => $has_bomblike_with_suit_count_(1)
              );
 
     }
