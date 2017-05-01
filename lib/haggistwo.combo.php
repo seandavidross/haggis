@@ -399,7 +399,7 @@ namespace Haggis\Cards
 
     function collect_bomblike_sets_()
     {     
-      return array_map("array_unique", $this->get_all_sets_of_odd_cards_()); // and finally squeeze out any duplicate suits
+      return array_map("array_unique", $this->get_all_sets_of_odd_cards_()); 
     }
 
     function get_all_sets_of_odd_cards_()
