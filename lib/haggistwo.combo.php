@@ -393,7 +393,7 @@ namespace Haggis\Cards
 
     // Check if there is a possibility to play a rainbow / uniform bomb among current set of cards
     function detect_bombs( $cards ) 
-    { // REFACTOR: rename to 'detect_bombs'
+    { 
       $inject_ = function($x, $xs) {
         return 
           array_map( function($n) use($x) { 
