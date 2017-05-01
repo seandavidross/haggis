@@ -165,7 +165,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   */
   public function the_analyzer_looks_for_bombs()
   {
-    $this->analysis = static::$analyst->checkBombsAmongCards( $this->cards );
+    $this->analysis = static::$analyst->detect_bombs( $this->cards );
   }
 
   /**
