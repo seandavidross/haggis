@@ -425,9 +425,9 @@ namespace Haggis\Cards
       return array_map( function($n) use($x) { return array_merge((array)$x, (array)$n); }, $xs);
     }
 
-    function has_bomblike_with_suit_count_($c, $maybe_bombs) 
+    function has_bomblike_with_suit_count_($suit_count, $maybe_bombs) 
     { 
-      $bomblike = array_filter( $maybe_bombs, function($bs) use($c) { return count($bs) == $c; } ); 
+      $bomblike = array_filter( $maybe_bombs, function($bs) use($suit_count) { return count($bs) == $suit_count; } ); 
       return count($bomblike) > 0; 
     }
 
