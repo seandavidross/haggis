@@ -105,8 +105,8 @@ namespace Haggis\Cards
 
     private function group_cards_by_suit_and_rank_($cards) 
     { // Build a "card grid" (serie-value and value-serie)
-      $this->cards_by_suit  = array_fill_keys( SUITS, array() );
-      $this->cards_by_rank  = array_fill_keys( RANKS, array() );
+      $this->cards_by_suit = array_fill_keys( SUITS, array() );
+      $this->cards_by_rank = array_fill_keys( RANKS, array() );
       $this->wild_card_ids = array();
 
       foreach( $cards as $card ) 
