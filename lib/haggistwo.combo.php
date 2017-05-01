@@ -394,16 +394,32 @@ namespace Haggis\Cards
     // Check if there is a possibility to play a rainbow / uniform bomb among current set of cards
     function detect_bombs( $cards ) 
     { // REFACTOR: rename to 'detect_bombs'
-      $inject_ = function($elem, $array) {
-          return array_map(function ($n) use ($elem) { return array_merge((array)$elem, (array)$n); }, $array);
+      $inject_ = function($x, $xs) {
+        return 
+          array_map( function($n) use($x) { 
+                       return array_merge((array)$x, (array)$n); 
+                     }
+                   , $xs
+                   );
       };
 
-      $zip_ = function($array1, $array2) use($inject_) {
-          return array_reduce($array1, function ($v, $n) use ($array2, $inject_) { return array_merge($v, $inject_($n, $array2));  }, array());
+      $zip_ = function($xs, $ys) use($inject_) {
+        return 
+          array_reduce( $xs
+                      , function($x, $y) use($ys, $inject_) { 
+                          return array_merge($x, $inject_($y, $ys));  
+                        }   
+                      , array()
+                      );
       };
 
-      $pluck_ = function($keys, $values_at) {
-        return array_map( function($k) use($values_at) { return $values_at[$k]; }, $keys);
+      $pluck_ = function($keys, $vs) {
+        return 
+          array_map( function($k) use($vs) { 
+                       return $vs[$k]; 
+                     }
+                   , $keys
+                   );
       };
 
 
@@ -414,15 +430,15 @@ namespace Haggis\Cards
       
       $point_card_combos = $zip_($threes, $zip_($fives, $zip_($sevens, $nines))); // get all the combinations of the 4 point cards
       
-      $maybe_bombs = array_map("array_unique", $point_card_combos);            // and finally squeeze out any duplicate suits
+      $maybe_bombs = array_map("array_unique", $point_card_combos); // and finally squeeze out any duplicate suits
 
-      $has_set_of_odd_cards_with_suit_count_ = function($n) use($maybe_bombs) {
+      $has_set_with_distinct_suits_ = function($n) use($maybe_bombs) {
         return count(array_filter($maybe_bombs, function($b) use($n) {return count($b) == $n;})) > 0;
       };
       
       return 
-        array( 'rainbow' => $has_set_of_odd_cards_with_suit_count_(4)
-             , 'suited' => $has_set_of_odd_cards_with_suit_count_(1)
+        array( 'rainbow' => $has_set_with_distinct_suits_(4)
+             , 'suited' => $has_set_with_distinct_suits_(1)
              );
 
     }
