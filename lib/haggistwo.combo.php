@@ -385,29 +385,51 @@ namespace Haggis\Cards
     }
 
 
-    // Check if there is a possibility to play a rainbow / uniform bomb among current set of cards
+
     function detect_bombs( $cards ) 
-    { // some helper lambdas...
-      $inject_ = function($x, $xs) { return array_map( function($n) use($x) { return array_merge((array)$x, (array)$n); }, $xs);};
-      $zip_ = function($xs, $ys) use($inject_) { return array_reduce( $xs, function($x, $y) use($ys, $inject_) { return array_merge($x, $inject_($y, $ys)); }, array() ); };
-      $pluck_ = function($keys, $vs) { return array_map( function($k) use($vs) { return $vs[$k]; }, $keys);};
+    { 
+      $this->group_cards_by_suit_and_rank_($cards);       
+      $maybe_bombs = $this->collect_bomblike_sets();
 
-      $this->group_cards_by_suit_and_rank_($cards); // we can use this to gather up all of the point cards then
-      list($threes, $fives, $sevens, $nines) = array_map("array_keys", $pluck_( POINT_CARDS, $this->cards_by_rank ));
-      $point_card_combos = $zip_($threes, $zip_($fives, $zip_($sevens, $nines))); // get all the combinations of the 4 point cards
-      $maybe_bombs = array_map("array_unique", $point_card_combos); // and finally squeeze out any duplicate suits
-
-      // another helper lambda...
-      $has_bomblike_with_suit_count_ = function($c) use($maybe_bombs) { $bomblike = array_filter( $maybe_bombs, function($bs) use($c) { return count($bs) == $c; } ); return count($bomblike) > 0; };
-      
       return 
-        array( 'rainbow' => $has_bomblike_with_suit_count_(4)
-             , 'suited' => $has_bomblike_with_suit_count_(1)
+        array( 'rainbow' => $this->has_bomblike_with_suit_count_(4, $maybe_bombs)
+             , 'suited' => $this->has_bomblike_with_suit_count_(1, $maybe_bombs)
              );
     }
 
-    
+    function collect_bomblike_sets()
+    {     
+      return array_map("array_unique", $this->get_all_sets_of_odd_cards_()); // and finally squeeze out any duplicate suits
+    }
 
+    function get_all_sets_of_odd_cards_()
+    {
+      list($threes, $fives, $sevens, $nines) 
+        = array_map("array_keys", $this->pluck_( POINT_CARDS, $this->cards_by_rank ));
+      
+      return $this->zip_($threes, $this->zip_($fives, $this->zip_($sevens, $nines))); 
+    }
+
+    function pluck_($keys, $values) 
+    {
+      return array_map( function($k) use($values) { return $values[$k]; }, $keys);
+    }
+
+    function zip_($xs, $ys) 
+    { 
+      return array_reduce( $xs, function($x, $y) use($ys) { return array_merge($x, $this->inject_($y, $ys)); }, array() ); 
+    }
+
+    function inject_($x, $xs) 
+    { 
+      return array_map( function($n) use($x) { return array_merge((array)$x, (array)$n); }, $xs);
+    }
+
+    function has_bomblike_with_suit_count_($c, $maybe_bombs) 
+    { 
+      $bomblike = array_filter( $maybe_bombs, function($bs) use($c) { return count($bs) == $c; } ); 
+      return count($bomblike) > 0; 
+    }
 
   }// end class Combo
 
