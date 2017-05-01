@@ -389,7 +389,7 @@ namespace Haggis\Cards
     function detect_bombs( $cards ) 
     { 
       $this->group_cards_by_suit_and_rank_($cards);       
-      $maybe_bombs = $this->collect_bomblike_sets();
+      $maybe_bombs = $this->collect_bomblike_sets_();
 
       return 
         array( 'rainbow' => $this->has_bomblike_with_suit_count_(4, $maybe_bombs)
@@ -397,7 +397,7 @@ namespace Haggis\Cards
              );
     }
 
-    function collect_bomblike_sets()
+    function collect_bomblike_sets_()
     {     
       return array_map("array_unique", $this->get_all_sets_of_odd_cards_()); // and finally squeeze out any duplicate suits
     }
