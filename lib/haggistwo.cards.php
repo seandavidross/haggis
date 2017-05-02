@@ -79,7 +79,9 @@ namespace Haggis\Cards
     function __construct(int $suit, int $rank, $options = array())
     {
       $this->suit = $this->check_suit_($suit);
+      
       $this->rank = $this->check_rank_($rank);
+      
       $this->points = POINTS[$rank];
 
       $this->owner
