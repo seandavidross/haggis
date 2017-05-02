@@ -51,9 +51,9 @@ describe("Card", function() {
       
       $creating_a_card_with_an_invalid_owner = function() {
         return 
-          new Card(Haggis\Cards\SUITS['RED']
-                  ,Haggis\Cards\RANKS['8']
-                  ,array('owner' => 4)
+          new Card( Haggis\Cards\SUITS['RED']
+                  , Haggis\Cards\RANKS['8']
+                  , array('owner' => 4)
                   );
       };
 
@@ -66,9 +66,9 @@ describe("Card", function() {
       
       $creating_a_card_with_an_invalid_location = function() {
         return 
-          new Card(Haggis\Cards\SUITS['RED']
-                  ,Haggis\Cards\RANKS['8']
-                  ,array('location' => 4)
+          new Card( Haggis\Cards\SUITS['RED']
+                  , Haggis\Cards\RANKS['8']
+                  , array('location' => 4)
                   );
       };
 
@@ -81,9 +81,9 @@ describe("Card", function() {
       
       $creating_a_card_with_an_invalid_position = function() {
         return 
-          new Card(Haggis\Cards\SUITS['RED']
-                  ,Haggis\Cards\RANKS['8']
-                  ,array('position' => Haggis\Cards\MAX_HAND_SIZE + 1)
+          new Card( Haggis\Cards\SUITS['RED']
+                  , Haggis\Cards\RANKS['8']
+                  , array('position' => Haggis\Cards\MAX_HAND_SIZE + 1)
                   );
       };
 
@@ -96,9 +96,9 @@ describe("Card", function() {
       
       $creating_a_card_with_an_negative_position = function() {
         return 
-          new Card(Haggis\Cards\SUITS['RED']
-                  ,Haggis\Cards\RANKS['8']
-                  ,array('position' => -1)
+          new Card( Haggis\Cards\SUITS['RED']
+                  , Haggis\Cards\RANKS['8']
+                  , array('position' => -1)
                   );
       };
 
