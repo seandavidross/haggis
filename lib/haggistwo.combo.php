@@ -40,6 +40,59 @@ namespace Haggis\Cards
     }
 
 
+    public function detect_bombs( $cards ) 
+    { 
+      $this->group_cards_by_suit_and_rank_($cards);       
+
+      $maybe_bombs = $this->collect_bomblike_sets_();
+
+      return 
+        array( 'rainbow' => $this->has_bomblike_with_suit_count_(4, $maybe_bombs)
+             , 'suited' => $this->has_bomblike_with_suit_count_(1, $maybe_bombs)
+             );
+    }
+
+
+    private function collect_bomblike_sets_()
+    {     
+      return array_map("array_unique", $this->get_all_sets_of_odd_cards_()); 
+    }
+
+
+    private function get_all_sets_of_odd_cards_()
+    {
+      list($threes, $fives, $sevens, $nines) 
+        = array_map("array_keys", $this->pluck_( POINT_CARDS, $this->cards_by_rank ));
+      
+      return $this->zip_($threes, $this->zip_($fives, $this->zip_($sevens, $nines))); 
+    }
+
+
+    private function pluck_($keys, $values) 
+    {
+      return array_map( function($k) use($values) { return $values[$k]; }, $keys);
+    }
+
+
+    private function zip_($xs, $ys) 
+    { 
+      return array_reduce( $xs, function($x, $y) use($ys) { return array_merge($x, $this->inject_($y, $ys)); }, array() ); 
+    }
+
+
+    private function inject_($x, $xs) 
+    { 
+      return array_map( function($n) use($x) { return array_merge((array)$x, (array)$n); }, $xs);
+    }
+
+
+    private function has_bomblike_with_suit_count_($suit_count, $maybe_bombs) 
+    { 
+      $bomblike = array_filter( $maybe_bombs, function($bs) use($suit_count) { return count($bs) == $suit_count; } ); 
+      return count($bomblike) > 0; 
+    }
+
+
     // Analyse played combo
     // Return an array of possible combos = object of this kind:
     //  array( "type" => set/sequence/bomb,
@@ -426,58 +479,6 @@ namespace Haggis\Cards
              );
     }
 
-
-    public function detect_bombs( $cards ) 
-    { 
-      $this->group_cards_by_suit_and_rank_($cards);       
-
-      $maybe_bombs = $this->collect_bomblike_sets_();
-
-      return 
-        array( 'rainbow' => $this->has_bomblike_with_suit_count_(4, $maybe_bombs)
-             , 'suited' => $this->has_bomblike_with_suit_count_(1, $maybe_bombs)
-             );
-    }
-
-
-    private function collect_bomblike_sets_()
-    {     
-      return array_map("array_unique", $this->get_all_sets_of_odd_cards_()); 
-    }
-
-
-    private function get_all_sets_of_odd_cards_()
-    {
-      list($threes, $fives, $sevens, $nines) 
-        = array_map("array_keys", $this->pluck_( POINT_CARDS, $this->cards_by_rank ));
-      
-      return $this->zip_($threes, $this->zip_($fives, $this->zip_($sevens, $nines))); 
-    }
-
-
-    private function pluck_($keys, $values) 
-    {
-      return array_map( function($k) use($values) { return $values[$k]; }, $keys);
-    }
-
-
-    private function zip_($xs, $ys) 
-    { 
-      return array_reduce( $xs, function($x, $y) use($ys) { return array_merge($x, $this->inject_($y, $ys)); }, array() ); 
-    }
-
-
-    private function inject_($x, $xs) 
-    { 
-      return array_map( function($n) use($x) { return array_merge((array)$x, (array)$n); }, $xs);
-    }
-
-
-    private function has_bomblike_with_suit_count_($suit_count, $maybe_bombs) 
-    { 
-      $bomblike = array_filter( $maybe_bombs, function($bs) use($suit_count) { return count($bs) == $suit_count; } ); 
-      return count($bomblike) > 0; 
-    }
 
   }// end class Combo
 
