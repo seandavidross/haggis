@@ -10,7 +10,7 @@ namespace Haggis\Cards
 
   class Combo
   {
-    function __construct(array $cards)
+    public function __construct(array $cards)
     { 
       if (empty($cards))
         throw new EmptyCombination("A combo cannot contain zero cards");
@@ -48,7 +48,7 @@ namespace Haggis\Cards
     //         "nbr" => number of cards
     //         "display" => cards ids in right order for display )
     //  ... or null if this is an invalid combo
-    function get_possible_combinations($cards)
+    public function get_possible_combinations($cards)
     {
       if( $this->has_cached_combinations )
         return $this->combinations;
@@ -427,7 +427,7 @@ namespace Haggis\Cards
     }
 
 
-    function detect_bombs( $cards ) 
+    public function detect_bombs( $cards ) 
     { 
       $this->group_cards_by_suit_and_rank_($cards);       
 
@@ -440,13 +440,13 @@ namespace Haggis\Cards
     }
 
 
-    function collect_bomblike_sets_()
+    private function collect_bomblike_sets_()
     {     
       return array_map("array_unique", $this->get_all_sets_of_odd_cards_()); 
     }
 
 
-    function get_all_sets_of_odd_cards_()
+    private function get_all_sets_of_odd_cards_()
     {
       list($threes, $fives, $sevens, $nines) 
         = array_map("array_keys", $this->pluck_( POINT_CARDS, $this->cards_by_rank ));
@@ -455,25 +455,25 @@ namespace Haggis\Cards
     }
 
 
-    function pluck_($keys, $values) 
+    private function pluck_($keys, $values) 
     {
       return array_map( function($k) use($values) { return $values[$k]; }, $keys);
     }
 
 
-    function zip_($xs, $ys) 
+    private function zip_($xs, $ys) 
     { 
       return array_reduce( $xs, function($x, $y) use($ys) { return array_merge($x, $this->inject_($y, $ys)); }, array() ); 
     }
 
 
-    function inject_($x, $xs) 
+    private function inject_($x, $xs) 
     { 
       return array_map( function($n) use($x) { return array_merge((array)$x, (array)$n); }, $xs);
     }
 
 
-    function has_bomblike_with_suit_count_($suit_count, $maybe_bombs) 
+    private function has_bomblike_with_suit_count_($suit_count, $maybe_bombs) 
     { 
       $bomblike = array_filter( $maybe_bombs, function($bs) use($suit_count) { return count($bs) == $suit_count; } ); 
       return count($bomblike) > 0; 

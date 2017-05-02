@@ -151,10 +151,12 @@ namespace Haggis\Cards
       return $this->suit;
     }
 
-  function rank()
+
+    function rank()
     {
       return $this->rank;
     }
+
 
     function points()
     {
