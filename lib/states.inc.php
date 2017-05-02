@@ -33,74 +33,70 @@
 *
 */
 
-$machinestates = array(
-
-    1 => array(
-        "name" => "gameSetup",
-        "description" => clienttranslate("Game setup"),
-        "type" => "manager",
-        "action" => "stGameSetup",
-        "transitions" => array( "" => 2 )
-    ),
-    
-    2 => array(
-        "name" => "newRound",
-        "description" => '',
-        "type" => "game",
-        "action" => "stNewRound",
-        "transitions" => array( "" => 10 )
-    ),
-
-    10 => array(
-        "name" => "newTrick",
-        "description" => '',
-        "type" => "game",
-        "action" => "stNewTrick",
-        "updateGameProgression" => true,
-        "transitions" => array( "" => 11 )
-    ),
-
-    11 => array(
-        "name" => "playComboOpen",
-        "description" => clienttranslate('${actplayer} must play an opening card combination'),
-        "descriptionmyturn" => clienttranslate('${you} must play an opening card combination'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "playCombo", "bet" ),
-        "transitions" => array( "" => 20    )
-    ),
-    12 => array(
-        "name" => "playCombo",
-        "description" => clienttranslate('${actplayer} must play a card combination, or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card combination, or pass'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "playCombo", "pass", "bet" ),
-        "transitions" => array( "" => 20  )
-    ),
-    
-    20 => array(
-        "name" => "nextPlayer",
-        "description" => '',
-        "type" => "game",
-        "action" => "stNextPlayer",
-        "transitions" => array( "nextPlayer" => 12, "endTrick" => 10, "endRound" => 50 )
-    ),    
-
-    50 => array(
-        "name" => "endRound",
-        "description" => '',
-        "type" => "game",
-        "action" => "stEndRound",
-        "transitions" => array( "endGame" => 99, "newRound" => 2 )
-    ),
-   
-    99 => array(
-        "name" => "gameEnd",
-        "description" => clienttranslate("End of game"),
-        "type" => "manager",
-        "action" => "stGameEnd",
-        "args" => "argGameEnd"
-    )
-
-);
+$machinestates 
+  = array( 1 => array( "name" => "gameSetup"
+                     , "description" => clienttranslate("Game setup")
+                     , "type" => "manager"
+                     , "action" => "stGameSetup"
+                     , "transitions" => array( "" => 2 )
+                     )
+         
+         , 2 => array( "name" => "newRound"
+                     , "description" => ''
+                     , "type" => "game"
+                     , "action" => "stNewRound"
+                     , "transitions" => array( "" => 10 )
+                     )
+         
+         , 10 => array( "name" => "newTrick"
+                      , "description" => ''
+                      , "type" => "game"
+                      , "action" => "stNewTrick"
+                      , "updateGameProgression" => true
+                      , "transitions" => array( "" => 11 )
+                      )
+         
+         , 11 => array( "name" => "playComboOpen"
+                      , "description" => 
+                          clienttranslate('${actplayer} must play an opening card combination')
+                      , "descriptionmyturn" => 
+                          clienttranslate('${you} must play an opening card combination')
+                      , "type" => "activeplayer"
+                      , "possibleactions" => array( "playCombo", "bet" )
+                      , "transitions" => array( "" => 20    )
+                      )
+         
+         , 12 => array( "name" => "playCombo"
+                      , "description" => 
+                          clienttranslate('${actplayer} must play a card combination, or pass')
+                      , "descriptionmyturn" => 
+                          clienttranslate('${you} must play a card combination, or pass')
+                      , "type" => "activeplayer"
+                      , "possibleactions" => array( "playCombo", "pass", "bet" )
+                      , "transitions" => array( "" => 20  )
+                      )
+         
+         , 20 => array( "name" => "nextPlayer"
+                      , "description" => ''
+                      , "type" => "game"
+                      , "action" => "stNextPlayer"
+                      , "transitions" => 
+                          array( "nextPlayer" => 12, "endTrick" => 10, "endRound" => 50 )
+                      )
+         
+         , 50 => array( "name" => "endRound"
+                      , "description" => ''
+                      , "type" => "game"
+                      , "action" => "stEndRound"
+                      , "transitions" => array( "endGame" => 99, "newRound" => 2 )
+                      )
+         
+         , 99 => array( "name" => "gameEnd"
+                      , "description" => clienttranslate("End of game")
+                      , "type" => "manager"
+                      , "action" => "stGameEnd"
+                      , "args" => "argGameEnd"
+                      )
+         );
 
 ?>
