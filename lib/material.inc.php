@@ -1,5 +1,6 @@
 <?php
 
+// TODO: eventually, this should be a Haggis/Deck stocked with Haggis/Cards...
 $this->card_initial = array(
 
     array( 'type' => 0, 'type_arg' => 2, 'nbr' => 1 ),
