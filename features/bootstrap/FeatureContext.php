@@ -41,7 +41,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
 
     $this->possible_combinations = array();
 
-    $this->combination = array();
+    $this->possible_combination = array();
   }
 
 
@@ -123,9 +123,9 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   {
     $this->assertEquals(count($this->possible_combinations), $number_of_valid_combos);
     
-    $this->combination = array_shift($this->possible_combinations);
+    $this->possible_combination = array_shift($this->possible_combinations);
     
-    array_unshift($this->possible_combinations, $this->combination);
+    array_unshift($this->possible_combinations, $this->possible_combination);
   }
 
 
@@ -136,7 +136,10 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   {
     $type = ($type == 'null') ? null : $type;
     
-    $combo_type = (count($this->possible_combinations) > 1) ? 'vague' : $this->combination['type'];
+    $combo_type 
+      = (count($this->possible_combinations) > 1) 
+      ? 'vague' 
+      : $this->possible_combination['type'];
     
     $this->assertEquals( $combo_type, $type );
   }
@@ -149,7 +152,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   {
     $nbr = $number_of_cards == 'null' ? null : $number_of_cards;
     
-    $this->assertEquals( $this->combination['nbr'], $nbr );
+    $this->assertEquals( $this->possible_combination['nbr'], $nbr );
   }
 
 
@@ -167,7 +170,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   */
   public function the_display_size_should_be($combo_size)
   {
-    $d = count($this->combination['display']);
+    $d = count($this->possible_combination['display']);
     
     $display_size = ($d == null) ? 'null' : $d;
     
@@ -182,7 +185,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   {
     $this->cards = array();
     
-    $this->combination = array();
+    $this->possible_combination = array();
     
     $this->possible_combinations = array();
   }
