@@ -3,12 +3,11 @@ Feature: Identify played combo
   Background:
     Given we have a combo analyzer 
 
-  # 'impossible combo' would be better than 'impossible bomb'
-  # best would be 'Cannot play a combo with zero cards in it'
+  
   Scenario: Zero cards are played
     Given no cards were played
     When the analyzer is run
-    Then it should fail with error 'impossible bomb'
+    Then it should fail with error 'A combo cannot contain zero cards'
     
   Scenario: Card does not belong to me
     Given a card that does not belong to me

@@ -13,10 +13,10 @@ namespace Haggis\Cards
     public function __construct(array $cards)
     { 
       if (empty($cards))
-        throw new EmptyCombination("A combo cannot contain zero cards");
+        throw new EmptyCombination();
       
       if (in_array(null, $cards)) 
-        throw new NullCombination("A combo's cards cannot be null.");
+        throw new NullCombination();
 
       $this->cards = $cards;
 
@@ -40,7 +40,7 @@ namespace Haggis\Cards
     }
 
 
-    public function detect_bombs( $cards ) 
+    public function detect_bombs($cards) 
     { 
       $this->group_cards_by_suit_and_rank_($cards);       
 
@@ -50,6 +50,30 @@ namespace Haggis\Cards
         array( 'rainbow' => $this->has_bomblike_with_suit_count_(4, $maybe_bombs)
              , 'suited' => $this->has_bomblike_with_suit_count_(1, $maybe_bombs)
              );
+    }
+
+
+    private function group_cards_by_suit_and_rank_($cards) 
+    { // Build a "card grid" (serie-value and value-serie)
+      $this->cards_by_suit = array_fill_keys( SUITS, array() );
+  
+      $this->cards_by_rank = array_fill_keys( RANKS, array() );
+  
+      $this->wild_card_ids = array();
+
+      foreach( $cards as $card ) 
+      {
+        $suit = $card['type'];
+  
+        $rank = $card['type_arg'];
+
+        $this->cards_by_suit[$suit][$rank] = $card['id'];
+  
+        $this->cards_by_rank[$rank][$suit] = $card['id'];
+        
+        if( $suit == SUITS['WILD'] ) 
+          $this->wild_card_ids[] = $card['id'];
+      }
     }
 
 
@@ -101,12 +125,12 @@ namespace Haggis\Cards
     //         "nbr" => number of cards
     //         "display" => cards ids in right order for display )
     //  ... or null if this is an invalid combo
-    public function get_possible_combinations($cards)
+    public function get_possible_combinations()
     {
       if( $this->has_cached_combinations )
         return $this->combinations;
 
-      $this->prepare_to_analyze_($cards);
+      $this->prepare_to_analyze_($this->cards);
 
       if( $this->is_all_wild_cards_() ) 
         return $this->could_be_wild_single_or_wild_bomb_();
@@ -118,9 +142,11 @@ namespace Haggis\Cards
     } 
 
 
+    // TODO: Finish refactoring to remove $cards argument from 
+    // all methods. We want to use $this->cards instead...
     private function prepare_to_analyze_($cards) 
     {
-      static::check_all_cards_belong_to_active_player_($cards);
+      static::check_cards_belong_to_active_player_($cards);
 
       $this->group_cards_by_suit_and_rank_($cards);
 
@@ -144,12 +170,12 @@ namespace Haggis\Cards
     // the class that will call #get_possible_combinations, this class shouldn't care
     // about who has the cards or where they came from, it only needs to
     // know if the cards form valid Haggis combinations or not...
-    private static function check_all_cards_belong_to_active_player_($cards)
+    private static function check_cards_belong_to_active_player_($cards)
     {
       foreach( $cards as $card )
       {
         if(static::does_not_belong_to_active_player_($card))
-          throw new CardNotInHand('Card is not in your hand');
+          throw new CardNotInHand();
       }
     }
 
@@ -166,30 +192,6 @@ namespace Haggis\Cards
       return 1; // HACK: just need a consistent value for testing
     }
     // REFACTOR: move the above methods into HaggisTwo class.
-
-
-    private function group_cards_by_suit_and_rank_($cards) 
-    { // Build a "card grid" (serie-value and value-serie)
-      $this->cards_by_suit = array_fill_keys( SUITS, array() );
-  
-      $this->cards_by_rank = array_fill_keys( RANKS, array() );
-  
-      $this->wild_card_ids = array();
-
-      foreach( $cards as $card ) 
-      {
-        $suit = $card['type'];
-  
-        $rank = $card['type_arg'];
-
-        $this->cards_by_suit[$suit][$rank] = $card['id'];
-  
-        $this->cards_by_rank[$rank][$suit] = $card['id'];
-        
-        if( $suit == SUITS['WILD'] ) 
-          $this->wild_card_ids[] = $card['id'];
-      }
-    }
 
 
     private function count_suits_($cards) 
@@ -238,8 +240,8 @@ namespace Haggis\Cards
     {
       $combo_value = $this->sum_wild_card_ranks_();
 
-      if( $combo_value == 0 )
-        throw new ImpossibleCombination("impossible bomb");
+      if( $combo_value == 0 ) 
+        throw new ImpossibleCombination();
 
       $combo_type = $this->wild_count_is_(1) ? 'set' : 'bomb';
       
