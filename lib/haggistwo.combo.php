@@ -170,27 +170,27 @@ namespace Haggis\Cards
     {     
       return 
         array_map( "array_unique"
-                 , $this->collect_odd_card_sets_()
+                 , $this->collect_point_card_sets_()
                  ); 
     }
 
 
-    private function collect_odd_card_sets_()
+    private function collect_point_card_sets_()
     {
       list($threes, $fives, $sevens, $nines) = 
-          $this->collect_odd_cards_();
+          $this->collect_natural_point_cards_();
       
       $sevens_nines = $this->zip_($sevens, $nines);
       
       $fives_sevens_nines = $this->zip_($fives, $sevens_nines);
       
-      $odd_card_sets = $this->zip_($threes, $fives_sevens_nines);
+      $point_card_sets = $this->zip_($threes, $fives_sevens_nines);
       
-      return $odd_card_sets;
+      return $point_card_sets;
     }
 
 
-    private function collect_odd_cards_() 
+    private function collect_natural_point_cards_() 
     {
       return
         array_map( "array_keys"
@@ -341,7 +341,7 @@ namespace Haggis\Cards
           && $this->has_only_one_(5)
           && $this->has_only_one_(7) 
           && $this->has_only_one_(9)
-          && $this->has_distinct_odd_cards_in_same_or_mixed_suits_();
+          && $this->has_distinct_point_cards_in_same_or_mixed_suits_();
     }
 
 
@@ -351,7 +351,7 @@ namespace Haggis\Cards
     }
 
 
-    private function has_distinct_odd_cards_in_same_or_mixed_suits_() 
+    private function has_distinct_point_cards_in_same_or_mixed_suits_() 
     {
       return $this->card_count_is_(4) 
           && $this->wild_count_is_(0)
