@@ -47,8 +47,11 @@ namespace Haggis\Cards
       $maybe_bombs = $this->collect_bomblike_sets_();
 
       return 
-        array( 'rainbow' => $this->has_bomblike_with_suit_count_(4, $maybe_bombs)
-             , 'suited' => $this->has_bomblike_with_suit_count_(1, $maybe_bombs)
+        array( 'rainbow' => 
+                  $this->has_bomblike_with_suit_count_(4, $maybe_bombs)
+             
+             , 'suited' => 
+                  $this->has_bomblike_with_suit_count_(1, $maybe_bombs)
              );
     }
 
@@ -87,7 +90,7 @@ namespace Haggis\Cards
     {
       list($threes, $fives, $sevens, $nines) = 
           array_map( "array_keys"
-                   , $this->pluck_( POINT_CARDS, $this->cards_by_rank )
+                   , $this->pluck_(POINT_CARDS, $this->cards_by_rank)
                    );
       
       return 
@@ -102,9 +105,9 @@ namespace Haggis\Cards
     private function pluck_($keys, $values) 
     {
       return 
-        array_map( function($k) use($values) 
+        array_map( function($key) use($values) 
                    { 
-                     return $values[$k]; 
+                     return $values[$key]; 
                    }
                  , $keys
                  );
@@ -124,14 +127,14 @@ namespace Haggis\Cards
     }
 
 
-    private function inject_($x, $xs) 
+    private function inject_($first, $rest) 
     { 
       return 
-        array_map( function($n) use($x) 
+        array_map( function($next) use($first) 
                    { 
-                     return array_merge((array)$x, (array)$n); 
+                     return array_merge((array)$first, (array)$next); 
                    }
-                 , $xs
+                 , $rest
                 );
     }
 
@@ -140,13 +143,13 @@ namespace Haggis\Cards
     { 
       $bomblike = 
           array_filter( $maybe_bombs
-                      , function($bs) use($suit_count) 
+                      , function($cards) use($suit_count) 
                         { 
-                          return count($bs) == $suit_count; 
+                          return count($cards) == $suit_count; 
                         } 
                       ); 
       
-        return count($bomblike) > 0; 
+      return count($bomblike) > 0; 
     }
 
 
@@ -244,11 +247,13 @@ namespace Haggis\Cards
 
     private function arrange_cards_by_id_() 
     {
-      $id_ = function($card) {
-         $card['id']; 
-      };
-
-      return array_map($id_, $this->cards); 
+      return 
+        array_map( function($card) 
+                   {
+                     $card['id']; 
+                   }
+                 , $this->cards
+                 ); 
     }
 
 
@@ -266,7 +271,8 @@ namespace Haggis\Cards
 
     private function could_be_wild_single_or_wild_bomb_() 
     {
-      $this->combinations[] = $this->may_be_wild_single_or_wild_bomb_();
+      $this->combinations[] = 
+          $this->may_be_wild_single_or_wild_bomb_();
       
       return $this->combinations;
     }
@@ -504,7 +510,7 @@ namespace Haggis\Cards
           $this->display_order[] = array_shift( $this->wild_card_ids );
       }
 
-      return ($wild_count == $this->number_of_wilds_available);
+      return $this->wild_count_is_($wild_count);
     }
 
 
