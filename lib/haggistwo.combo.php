@@ -357,8 +357,7 @@ namespace Haggis\Cards
     {
       return $this->card_count_is_(4) 
           && $this->wild_count_is_(0)
-          && $this->suit_count_is_(1) 
-          || $this->suit_count_is_(4);
+          && ($this->suit_count_is_(1) || $this->suit_count_is_(4));
     }
 
 
