@@ -21,7 +21,6 @@ namespace Haggis\Cards
       static::check_cards_belong_to_active_player_($cards);
       
       $this->cards = $cards;
-
       $this->card_count = count($cards);
 
       list( $this->cards_by_suit
@@ -37,11 +36,9 @@ namespace Haggis\Cards
           $this->find_highest_and_lowest_ranks_();
                 
       $this->combinations = array();
-
       $this->has_cached_combinations = false;
 
       $this->default_display = $this->arrange_cards_by_id_();
-
       $this->display_order = array();
     }
 
