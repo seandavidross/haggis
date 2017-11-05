@@ -58,13 +58,13 @@ namespace Haggis\Cards
 
     private function group_cards_by_suit_and_rank_() 
     { // Build a "card grid" (serie-value and value-serie)
-      $this->cards_by_suit = array_fill_keys( SUITS, array() );
+      $this->cards_by_suit = array_fill_keys(SUITS, array());
   
-      $this->cards_by_rank = array_fill_keys( RANKS, array() );
+      $this->cards_by_rank = array_fill_keys(RANKS, array());
   
       $this->wild_card_ids = array();
 
-      foreach( $this->cards as $card ) 
+      foreach ($this->cards as $card) 
       {
         $suit = $card['type'];
   
@@ -74,7 +74,7 @@ namespace Haggis\Cards
   
         $this->cards_by_rank[$rank][$suit] = $card['id'];
         
-        if( $suit == SUITS['WILD'] ) 
+        if ($suit == SUITS['WILD']) 
           $this->wild_card_ids[] = $card['id'];
       }
     }
@@ -163,15 +163,15 @@ namespace Haggis\Cards
     //  ... or null if this is an invalid combo
     public function get_possible_combinations()
     {
-      if( $this->has_cached_combinations )
+      if ($this->has_cached_combinations)
         return $this->combinations;
 
       $this->prepare_to_analyze_cards_($this->cards);
 
-      if( $this->is_all_wild_cards_() ) 
+      if ($this->is_all_wild_cards_()) 
         return $this->could_be_wild_single_or_wild_bomb_();
       
-      if( $this->could_be_number_bomb_() ) 
+      if ($this->could_be_number_bomb_()) 
         return $this->could_be_rainbow_or_suited_bomb_();
       
       return $this->could_be_set_or_sequence_();
@@ -211,9 +211,9 @@ namespace Haggis\Cards
     // know if the cards form valid Haggis combinations or not...
     private static function check_cards_belong_to_active_player_($cards)
     {
-      foreach( $cards as $card )
+      foreach ($cards as $card)
       {
-        if(static::does_not_belong_to_active_player_($card))
+        if (static::does_not_belong_to_active_player_($card))
           throw new CardNotInHand();
       }
     }
@@ -237,9 +237,9 @@ namespace Haggis\Cards
     {
       $this->number_of_suits = 0;
 
-      foreach( $this->cards_by_suit as $suit => $cards ) 
+      foreach ($this->cards_by_suit as $suit => $cards) 
       {
-        if( $suit !== SUITS['WILD'] && count( $cards ) > 0 )
+        if ($suit !== SUITS['WILD'] && count( $cards ) > 0)
           $this->number_of_suits++;
       }
     }
@@ -252,6 +252,7 @@ namespace Haggis\Cards
                    {
                      $card['id']; 
                    }
+                 
                  , $this->cards
                  ); 
     }
@@ -282,12 +283,12 @@ namespace Haggis\Cards
     {
       $combo_value = $this->sum_wild_card_ranks_();
 
-      if( $combo_value == 0 ) 
+      if ($combo_value == 0) 
         throw new ImpossibleCombination();
 
       $combo_type = $this->wild_count_is_(1) ? 'set' : 'bomb';
       
-      if( $combo_type == 'bomb' )
+      if ($combo_type == 'bomb')
         $combo_value = ($combo_value % 10 - 1);
 
       return 
@@ -383,17 +384,17 @@ namespace Haggis\Cards
       list($highest_rank, $lowest_rank) = 
           $this->find_highest_and_lowest_ranks_();
       
-      if( $lowest_rank == $highest_rank )
+      if ($lowest_rank == $highest_rank)
         $this->combinations[] = $this->may_be_set_of_value_($lowest_rank);
 
       // a sequence is two or more consecutively ranked sets, e.g., 6-6-6-7-7-7,
       // and this particular sequence would have a length of 2 (consectuve ranks),
       // a width of 3 (size of sets), and a rank of 7 (highest non-wild rank)
-      for($width = 1; $width < count(SUITS); $width++)
+      for ($width = 1; $width < count(SUITS); $width++)
       {
         $maybe_sequence = $this->may_be_sequence_of_width_($width);
         
-        if( !empty($maybe_sequence) ) 
+        if (!empty($maybe_sequence)) 
           $this->combinations[] = $maybe_sequence;
       }
 
@@ -407,11 +408,11 @@ namespace Haggis\Cards
 
       $lowest_rank  = null;
 
-      foreach( $this->cards_by_suit as $suit => $cards ) 
+      foreach ($this->cards_by_suit as $suit => $cards) 
       {
-        if( $suit !== SUITS['WILD'] && count($cards) > 0 ) 
+        if ($suit !== SUITS['WILD'] && count($cards) > 0) 
         {
-          foreach( $cards as $rank => $ignore ) 
+          foreach ($cards as $rank => $ignore) 
           {
             $highest_rank = 
                 max( $rank, $highest_rank );
@@ -495,7 +496,7 @@ namespace Haggis\Cards
 
       $this->display_order = array();
 
-      for( $rank = $this->lowest_rank; $rank <= $highest_rank; $rank++ ) 
+      for ($rank = $this->lowest_rank; $rank <= $highest_rank; $rank++) 
       {
         $spot_cards = $this->cards_by_rank[$rank];
 
@@ -503,10 +504,10 @@ namespace Haggis\Cards
 
         $wild_count += $width - $spot_card_count;
 
-        foreach( $spot_cards as $suit => $card_id )
+        foreach ($spot_cards as $suit => $card_id)
           $this->display_order[] = $card_id;
 
-        for( $i = $spot_card_count; $i < $width; $i++ )
+        for ($i = $spot_card_count; $i < $width; $i++)
           $this->display_order[] = array_shift( $this->wild_card_ids );
       }
 

@@ -203,11 +203,11 @@ namespace Haggis\Cards
     function to_hash()
     { // Eventually the key names need to be updated and need to include 'points'
       return
-        array('type' => $this->suit
-             ,'type_arg' => $this->rank
-             ,'id' => $this->position
-             ,'location' => $this->location
-             ,'location_arg' => $this->owner
+        array( 'type' => $this->suit
+             , 'type_arg' => $this->rank
+             , 'id' => $this->position
+             , 'location' => $this->location
+             , 'location_arg' => $this->owner
              );
     }
 

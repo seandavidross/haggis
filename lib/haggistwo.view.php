@@ -22,8 +22,8 @@
 
     function build_page( $viewArgs )
     {
-      $this->tpl['BET_EXPLANATION'] 
-          = self::_("Bet you can be the first to shed all cards from hand");
+      $this->tpl['BET_EXPLANATION'] = 
+          self::_("Bet you can be the first to shed all cards from hand");
     }
   }
 

@@ -25,18 +25,30 @@ class HaggisTwo extends Table
   function HaggisTwo( )
   {
     parent::__construct();
-    self::initGameStateLabels( array(  "game_duration" => 100,
-                                       "dealer" => 11, "lastTrickWinner" => 12, "lastRoundWinner" => 13,
-                                       "combotype" => 14, "combonbr" => 15, "comboserienbr" => 16, "combovalue" => 17,
-                                       "lastComboPlayer" => 18, "nbrPass" => 19, "nbrPassToWin" => 20 ) );
+    
+    self::initGameStateLabels( array( "game_duration" => 100
+                                    , "dealer" => 11
+                                    , "lastTrickWinner" => 12
+                                    , "lastRoundWinner" => 13
+                                    , "combotype" => 14
+                                    , "combonbr" => 15
+                                    , "comboserienbr" => 16
+                                    , "combovalue" => 17
+                                    , "lastComboPlayer" => 18
+                                    , "nbrPass" => 19
+                                    , "nbrPassToWin" => 20 
+                                    ) 
+                             );
 
     $this->cards = self::getNew( "module.common.deck" );
+    
     $this->cards->init( "card" );
   }
 
-    function getGameName() {
-        return "haggistwo";
-    }
+  function getGameName() 
+  {
+    return "haggistwo";
+  }
 
     protected function setupNewGame( $players, $options = array() )
     {

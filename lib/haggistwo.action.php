@@ -20,13 +20,13 @@
       {
         $this->view = "common_notifwindow";
 
-        $this->viewArgs['table'] = self::getArg( "table", AT_posint, true );
+        $this->viewArgs['table'] = self::getArg("table", AT_posint, true);
       }
       else
       {
         $this->view = "haggistwo_haggistwo";
         
-        self::trace( "Complete reinitialization of board game" );
+        self::trace("Complete reinitialization of board game");
       }
 
     } 
@@ -36,22 +36,22 @@
     {
       self::setAjaxMode(); 
 
-      $cards_raw = self::getArg( "cards", AT_numberlist, true );
+      $cards_raw = self::getArg("cards", AT_numberlist, true);
 
-      $combo_id = self::getArg( "combo", AT_posint, false, null );
+      $combo_id = self::getArg("combo", AT_posint, false, null);
       
       // Removing last ';' if exists
-      if( substr( $cards_raw, -1 ) == ';' )
-        $cards_raw = substr( $cards_raw, 0, -1 );
+      if( substr($cards_raw, -1) == ';' )
+        $cards_raw = substr($cards_raw, 0, -1);
       
       $cards 
         = $cards_raw == ''
         ? array()
-        : explode( ';', $cards_raw );
+        : explode(';', $cards_raw);
 
-      $result = $this->game->playCombo( $cards, $combo_id );
+      $result = $this->game->playCombo($cards, $combo_id);
 
-      self::ajaxResponse( );    
+      self::ajaxResponse();    
     }
     
     
@@ -61,7 +61,7 @@
   
       $result = $this->game->pass();
   
-      self::ajaxResponse( );
+      self::ajaxResponse();
     }
     
     
@@ -69,11 +69,11 @@
     {
       self::setAjaxMode();
   
-      $bet = self::getArg( "bet", AT_enum, true, false, array( '0', '15', '30' ) );   
+      $bet = self::getArg("bet", AT_enum, true, false, array('0', '15', '30'));   
   
-      $result = $this->game->bet( $bet );
+      $result = $this->game->bet($bet);
   
-      self::ajaxResponse( );
+      self::ajaxResponse();
     }
 
   }
