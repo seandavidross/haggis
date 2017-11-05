@@ -24,12 +24,8 @@ namespace Haggis\Cards
 
       $this->combinations = array();
 
-      $this->cards_by_suit = array();
-
-      $this->cards_by_rank = array();
-
-      $this->wild_card_ids = array();
-
+      $this->group_cards_by_suit_and_rank_();       
+      
       $this->default_display = array();
 
       $this->display_order = array();
@@ -42,8 +38,6 @@ namespace Haggis\Cards
 
     public function detect_bombs() 
     { 
-      $this->group_cards_by_suit_and_rank_();       
-
       $maybe_bombs = $this->collect_bomblike_sets_();
 
       return 
@@ -82,16 +76,17 @@ namespace Haggis\Cards
 
     private function collect_bomblike_sets_()
     {     
-      return array_map("array_unique", $this->get_all_sets_of_odd_cards_()); 
+      return 
+        array_map( "array_unique"
+                 , $this->collect_odd_card_sets_($this->cards_by_rank)
+                 ); 
     }
 
 
-    private function get_all_sets_of_odd_cards_()
+    private function collect_odd_card_sets_($cards_by_rank)
     {
       list($threes, $fives, $sevens, $nines) = 
-          array_map( "array_keys"
-                   , $this->pluck_(POINT_CARDS, $this->cards_by_rank)
-                   );
+          $this->collect_odd_cards_($cards_by_rank);
       
       return 
         $this->zip_( $threes
@@ -99,6 +94,15 @@ namespace Haggis\Cards
                                 , $this->zip_($sevens, $nines)
                                 )
                    ); 
+    }
+
+
+    private function collect_odd_cards_($cards_by_rank) 
+    {
+      return
+        array_map( "array_keys"
+                 , $this->pluck_(POINT_CARDS, $cards_by_rank)
+                 );
     }
 
 
@@ -183,8 +187,6 @@ namespace Haggis\Cards
     private function prepare_to_analyze_cards_() 
     {
       static::check_cards_belong_to_active_player_($this->cards);
-
-      $this->group_cards_by_suit_and_rank_();
 
       $this->count_suits_();
 
