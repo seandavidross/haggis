@@ -40,9 +40,9 @@ namespace Haggis\Cards
     }
 
 
-    public function detect_bombs($cards) 
+    public function detect_bombs() 
     { 
-      $this->group_cards_by_suit_and_rank_($cards);       
+      $this->group_cards_by_suit_and_rank_();       
 
       $maybe_bombs = $this->collect_bomblike_sets_();
 
@@ -53,7 +53,7 @@ namespace Haggis\Cards
     }
 
 
-    private function group_cards_by_suit_and_rank_($cards) 
+    private function group_cards_by_suit_and_rank_() 
     { // Build a "card grid" (serie-value and value-serie)
       $this->cards_by_suit = array_fill_keys( SUITS, array() );
   
@@ -61,7 +61,7 @@ namespace Haggis\Cards
   
       $this->wild_card_ids = array();
 
-      foreach( $cards as $card ) 
+      foreach( $this->cards as $card ) 
       {
         $suit = $card['type'];
   
@@ -130,7 +130,7 @@ namespace Haggis\Cards
       if( $this->has_cached_combinations )
         return $this->combinations;
 
-      $this->prepare_to_analyze_($this->cards);
+      $this->prepare_to_analyze_cards_($this->cards);
 
       if( $this->is_all_wild_cards_() ) 
         return $this->could_be_wild_single_or_wild_bomb_();
@@ -144,18 +144,18 @@ namespace Haggis\Cards
 
     // TODO: Finish refactoring to remove $cards argument from 
     // all methods. We want to use $this->cards instead...
-    private function prepare_to_analyze_($cards) 
+    private function prepare_to_analyze_cards_() 
     {
-      static::check_cards_belong_to_active_player_($cards);
+      static::check_cards_belong_to_active_player_($this->cards);
 
-      $this->group_cards_by_suit_and_rank_($cards);
+      $this->group_cards_by_suit_and_rank_();
 
-      $this->count_suits_($cards);
+      $this->count_suits_();
 
       $this->default_display 
-        = $this->arrange_cards_by_id_( $cards );
+        = $this->arrange_cards_by_id_();
 
-      $this->number_of_cards = count($cards);
+      $this->number_of_cards = count($this->cards);
 
       $this->number_of_wilds_available 
         = count( $this->cards_by_suit[SUITS['WILD']] );
@@ -194,7 +194,7 @@ namespace Haggis\Cards
     // REFACTOR: move the above methods into HaggisTwo class.
 
 
-    private function count_suits_($cards) 
+    private function count_suits_() 
     {
       $this->number_of_suits = 0;
 
@@ -206,13 +206,13 @@ namespace Haggis\Cards
     }
 
 
-    private function arrange_cards_by_id_($cards) 
+    private function arrange_cards_by_id_() 
     {
       $id_ = function($card) {
          $card['id']; 
       };
 
-      return array_map($id_, $cards); 
+      return array_map($id_, $this->cards); 
     }
 
 

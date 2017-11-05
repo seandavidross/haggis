@@ -15,14 +15,15 @@
 
   class view_haggistwo_haggistwo extends game_view
   {
-    function getGameName() {
-        return "haggistwo";
+    function getGameName() 
+    {
+      return "haggistwo";
     }
 
     function build_page( $viewArgs )
     {
-        $this->tpl['BET_EXPLANATION'] = self::_("Bet you can be the first to shed all cards from hand");
-
+      $this->tpl['BET_EXPLANATION'] 
+          = self::_("Bet you can be the first to shed all cards from hand");
     }
   }
 

@@ -198,7 +198,7 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   {
     $this->combo = new Haggis\Cards\Combo($this->cards);
     // REFACTOR: we want to remove the need to pass cards to #detect_bombs...
-    $this->possible_combinations = $this->combo->detect_bombs( $this->cards );
+    $this->possible_combinations = $this->combo->detect_bombs();
   }
 
 

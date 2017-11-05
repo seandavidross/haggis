@@ -1,0 +1,5 @@
+To run acceptance tests:
+    ./vendor/behat/behat/bin/behat
+
+To run unit tests:
+    ./vendor/kahlan/kahlan/bin/kahlan

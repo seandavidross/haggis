@@ -60,7 +60,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($single);
+            ->get_possible_combinations();
       });
 
       
@@ -91,7 +91,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($single);
+            ->get_possible_combinations();
       });
 
       
@@ -125,7 +125,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($unmatched_cards);
+            ->get_possible_combinations();
       });
 
       
@@ -149,7 +149,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($one_spot_and_one_wild);
+            ->get_possible_combinations();
       });
 
       
@@ -184,7 +184,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($two_matched_cards);
+            ->get_possible_combinations();
       });
 
       
@@ -219,7 +219,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($two_wild_cards);
+            ->get_possible_combinations();
       });
 
       
@@ -256,7 +256,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($three_matched_cards);
+            ->get_possible_combinations();
       });
 
       
@@ -293,7 +293,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($three_wild_cards);
+            ->get_possible_combinations();
       });
 
       
@@ -330,7 +330,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($two_matched_and_one_wild);
+            ->get_possible_combinations();
       });
 
       
@@ -366,7 +366,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($one_spot_and_two_wild);
+            ->get_possible_combinations();
       });
 
       
@@ -412,7 +412,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($run_of_two_and_one_wild);
+            ->get_possible_combinations();
       });
 
       
@@ -449,7 +449,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($two_in_a_row_and_one_wild);
+            ->get_possible_combinations();
       });
 
       
@@ -476,7 +476,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($one_spot_and_three_wild);
+            ->get_possible_combinations();
       });
 
       
@@ -536,7 +536,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($odd_suited_spot_cards);
+            ->get_possible_combinations();
       });
 
       
@@ -568,7 +568,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($odd_mixed_suit_spot_cards);
+            ->get_possible_combinations();
       });
 
       
@@ -601,7 +601,7 @@ describe("Combo", function() {
         $this->possibles = 
           $this
             ->combo
-            ->get_possible_combinations($odd_mixed_suit_spot_cards_plus_one);
+            ->get_possible_combinations();
       });
 
       
