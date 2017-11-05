@@ -189,7 +189,7 @@ class HaggisTwo extends Table
       return $combo->get_possible_combinations(); 
     }
 
-    
+
     function combo_type_to_id( $combo_type )
     {
         switch( $combo_type )
@@ -398,66 +398,6 @@ class HaggisTwo extends Table
     {
       $combo = new Haggis\Cards\Combo($cards);
       return $combo->detect_bombs(); 
-        // $bRainbowBomb = false;
-        // $bSuitedBomb = false;
-
-        // // Build a color / card table with cards present
-        // $inhands = array();
-        // for( $color=0;$color<5;$color++ )
-        // {
-        //     $inhands[$color] = array( 3=>0, 5=>0, 7=>0, 9=>0 );
-        // }
-
-        // foreach( $cards as $card )
-        // {
-        //     if( $card['type'] != 'wild' )
-        //     {
-        //         if( in_array( $card['type_arg'], array( 3,5,7,9 ) ) )
-        //             $inhands[ $card['type'] ][ $card['type_arg'] ] = 1;
-        //     }
-        // }
-
-        // // Test all colors combination
-        // for( $card3color = 0; $card3color<5; $card3color++ )
-        // {
-        //     if( $inhands[ $card3color ][3] == 1 )
-        //     {
-        //         for( $card5color = 0; $card5color<5; $card5color++ )
-        //         {
-        //             if( $inhands[ $card5color ][5] == 1 )
-        //             {
-        //                 for( $card7color = 0; $card7color<5; $card7color++ )
-        //                 {
-        //                     if( $inhands[ $card7color ][7] == 1 )
-        //                     {
-        //                         for( $card9color = 0; $card9color<5; $card9color++ )
-        //                         {
-        //                             if( $inhands[ $card9color ][9] == 1 )
-        //                             {
-        //                                 // Here, we have a set of 4 cards with colors that matches
-        //                                 //echo $card3color.','.$card5color.','.$card7color.','.$card9color."\n";
-
-        //                                 // Count number of distinct colors
-        //                                 $diff_color = count( array_unique( array( $card3color, $card5color, $card7color, $card9color ) ) );
-        //                                 //echo $diff_color."\n";
-
-        //                                 if( $diff_color == 4 )
-        //                                     $bRainbowBomb = true;
-        //                                 if( $diff_color == 1 )
-        //                                     $bSuitedBomb = true;
-        //                             }
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        // return array(
-        //     'rainbow' => $bRainbowBomb,
-        //     'suited' => $bSuitedBomb
-        // );
     }
 
 //////////////////////////////////////////////////////////////////////////////
