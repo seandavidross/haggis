@@ -180,12 +180,13 @@ namespace Haggis\Cards
       list($threes, $fives, $sevens, $nines) = 
           $this->collect_odd_cards_();
       
-      return 
-        $this->zip_( $threes
-                   , $this->zip_( $fives
-                                , $this->zip_($sevens, $nines)
-                                )
-                   ); 
+      $sevens_nines = $this->zip_($sevens, $nines);
+      
+      $fives_sevens_nines = $this->zip_($fives, $sevens_nines);
+      
+      $odd_card_sets = $this->zip_($threes, $fives_sevens_nines);
+      
+      return $odd_card_sets;
     }
 
 
