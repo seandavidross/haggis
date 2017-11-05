@@ -85,35 +85,68 @@ namespace Haggis\Cards
 
     private function get_all_sets_of_odd_cards_()
     {
-      list($threes, $fives, $sevens, $nines) 
-        = array_map("array_keys", $this->pluck_( POINT_CARDS, $this->cards_by_rank ));
+      list($threes, $fives, $sevens, $nines) = 
+          array_map( "array_keys"
+                   , $this->pluck_( POINT_CARDS, $this->cards_by_rank )
+                   );
       
-      return $this->zip_($threes, $this->zip_($fives, $this->zip_($sevens, $nines))); 
+      return 
+        $this->zip_( $threes
+                   , $this->zip_( $fives
+                                , $this->zip_($sevens, $nines)
+                                )
+                   ); 
     }
 
 
     private function pluck_($keys, $values) 
     {
-      return array_map( function($k) use($values) { return $values[$k]; }, $keys);
+      return 
+        array_map( function($k) use($values) 
+                   { 
+                     return $values[$k]; 
+                   }
+                 , $keys
+                 );
     }
 
 
     private function zip_($xs, $ys) 
     { 
-      return array_reduce( $xs, function($x, $y) use($ys) { return array_merge($x, $this->inject_($y, $ys)); }, array() ); 
+      return 
+        array_reduce( $xs
+                    , function($x, $y) use($ys) 
+                      { 
+                        return array_merge($x, $this->inject_($y, $ys)); 
+                      }
+                    , array() 
+                    ); 
     }
 
 
     private function inject_($x, $xs) 
     { 
-      return array_map( function($n) use($x) { return array_merge((array)$x, (array)$n); }, $xs);
+      return 
+        array_map( function($n) use($x) 
+                   { 
+                     return array_merge((array)$x, (array)$n); 
+                   }
+                 , $xs
+                );
     }
 
 
     private function has_bomblike_with_suit_count_($suit_count, $maybe_bombs) 
     { 
-      $bomblike = array_filter( $maybe_bombs, function($bs) use($suit_count) { return count($bs) == $suit_count; } ); 
-      return count($bomblike) > 0; 
+      $bomblike = 
+          array_filter( $maybe_bombs
+                      , function($bs) use($suit_count) 
+                        { 
+                          return count($bs) == $suit_count; 
+                        } 
+                      ); 
+      
+        return count($bomblike) > 0; 
     }
 
 
@@ -152,17 +185,20 @@ namespace Haggis\Cards
 
       $this->count_suits_();
 
-      $this->default_display 
-        = $this->arrange_cards_by_id_();
+      $this->default_display = 
+          $this->arrange_cards_by_id_();
 
-      $this->number_of_cards = count($this->cards);
+      $this->number_of_cards = 
+          count($this->cards);
 
-      $this->number_of_wilds_available 
-        = count( $this->cards_by_suit[SUITS['WILD']] );
+      $this->number_of_wilds_available = 
+          count($this->cards_by_suit[SUITS['WILD']]);
 
-      $this->combinations = array();
+      $this->combinations = 
+          array();
 
-      $this->has_cached_combinations = true;
+      $this->has_cached_combinations = 
+          true;
     }
 
 
@@ -338,8 +374,8 @@ namespace Haggis\Cards
 
     private function could_be_set_or_sequence_()
     {
-      list($highest_rank, $lowest_rank) 
-        = $this->find_highest_and_lowest_ranks_();
+      list($highest_rank, $lowest_rank) = 
+          $this->find_highest_and_lowest_ranks_();
       
       if( $lowest_rank == $highest_rank )
         $this->combinations[] = $this->may_be_set_of_value_($lowest_rank);
@@ -371,9 +407,11 @@ namespace Haggis\Cards
         {
           foreach( $cards as $rank => $ignore ) 
           {
-            $highest_rank = max( $rank, $highest_rank );
+            $highest_rank = 
+                max( $rank, $highest_rank );
 
-            $lowest_rank = ($lowest_rank == null) ? $rank : min($rank, $lowest_rank);
+            $lowest_rank = 
+                ($lowest_rank == null) ? $rank : min($rank, $lowest_rank);
           }
         }
       }
