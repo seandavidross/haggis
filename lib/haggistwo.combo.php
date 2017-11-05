@@ -24,7 +24,9 @@ namespace Haggis\Cards
 
       $this->card_count = count($cards);
 
-      $this->group_cards_by_suit_and_rank_();       
+      list( $this->cards_by_suit
+          , $this->cards_by_rank
+          , $this->wild_card_ids) = $this->group_cards_by_suit_and_rank_();       
 
       $this->suit_count = $this->count_suits_();
 
@@ -143,11 +145,11 @@ namespace Haggis\Cards
     
     private function group_cards_by_suit_and_rank_() 
     { // Build a "card grid" (serie-value and value-serie)
-      $this->cards_by_suit = array_fill_keys(SUITS, array());
+      $cards_by_suit = array_fill_keys(SUITS, array());
   
-      $this->cards_by_rank = array_fill_keys(RANKS, array());
+      $cards_by_rank = array_fill_keys(RANKS, array());
   
-      $this->wild_card_ids = array();
+      $wild_card_ids = array();
 
       foreach ($this->cards as $card) 
       {
@@ -155,13 +157,15 @@ namespace Haggis\Cards
   
         $rank = $card['type_arg'];
 
-        $this->cards_by_suit[$suit][$rank] = $card['id'];
+        $cards_by_suit[$suit][$rank] = $card['id'];
   
-        $this->cards_by_rank[$rank][$suit] = $card['id'];
+        $cards_by_rank[$rank][$suit] = $card['id'];
         
         if ($suit == SUITS['WILD']) 
-          $this->wild_card_ids[] = $card['id'];
+          $wild_card_ids[] = $card['id'];
       }
+
+      return array($cards_by_suit, $cards_by_rank, $wild_card_ids);
     }
 
 
@@ -426,7 +430,7 @@ namespace Haggis\Cards
 
     private function may_be_sequence_of_width_($width)
     {
-      $length = floor( $this->card_count / $width );
+      $length = floor($this->card_count / $width);
 
       $rank = $this->lowest_rank + $length - 1;
 
