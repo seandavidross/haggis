@@ -50,124 +50,131 @@ class HaggisTwo extends Table
     return "haggistwo";
   }
 
-    protected function setupNewGame( $players, $options = array() )
+  protected function setupNewGame( $players, $options = array() )
+  {
+    $sql = "DELETE FROM player WHERE 1 ";
+    self::DbQuery( $sql );
+
+    // Create players
+    $default_color = array( "ff0000", "008000", "0000ff", "ffa500" );
+    $values = array();
+
+    foreach( $players as $player_id => $player )
     {
-        $sql = "DELETE FROM player WHERE 1 ";
-        self::DbQuery( $sql );
-
-        // Create players
-        $default_color = array( "ff0000", "008000", "0000ff", "ffa500" );
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
-        $values = array();
-        foreach( $players as $player_id => $player )
-        {
-            $color = array_shift( $default_color );
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
-        }
-        $sql .= implode( $values, ',' );
-        self::DbQuery( $sql );
-        self::reloadPlayersBasicInfos();
-
-        // Create cards
-        $this->cards->createCards( $this->card_initial );
-
-        // 2 players mode: not all cards are used
-        if( count( $players ) <= 2 )
-        {
-            // .. remove a serie
-            $sql = "UPDATE card SET card_location='removed' WHERE card_type='4' ";
-            self::DbQuery( $sql );
-
-        }
-
-        self::setGameStateInitialValue( 'dealer', 0 );
-        self::setGameStateInitialValue( 'lastTrickWinner', 0 );
-        self::setGameStateInitialValue( 'lastRoundWinner', 0 );
-        self::setGameStateInitialValue( 'combotype', 0 );   // 0 = no combo / 1 = set / 2 = sequence / 3 = bomb
-        self::setGameStateInitialValue( 'combonbr', 0 );         // number of cards of current combo
-        self::setGameStateInitialValue( 'comboserienbr', 0 );    // number of series of current combo
-        self::setGameStateInitialValue( 'combovalue', 0 );       // value of current combo
-        self::setGameStateInitialValue( 'lastComboPlayer', 0 );   // player who played the last non void combo
-        self::setGameStateInitialValue( 'nbrPass', 0 );   // number of consecutive pass
-        self::setGameStateInitialValue( 'nbrPassToWin', 2 );   // number of consecutive pass needed to win the trick
-
-        self::initStat( 'table', 'round_number', 0 );
-        self::initStat( 'table', 'trick_number', 0 );
-        self::initStat( 'table', 'trick_bombed', 0 );
-
-        self::initStat( 'player', 'tricks_win', 0 );
-        self::initStat( 'player', 'bomb_number', 0 );
-        self::initStat( 'player', 'littlebet_number', 0 );
-        self::initStat( 'player', 'bigbet_number', 0 );
-        self::initStat( 'player', 'successfulbet_number', 0 );
+      $color = array_shift( $default_color );
+      $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
     }
 
-    // Get all datas (complete reset request from client side)
-    protected function getAllDatas()
+    $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
+    $sql .= implode( $values, ',' );
+    self::DbQuery( $sql );
+    
+    self::reloadPlayersBasicInfos();
+
+    // Create cards
+    $this->cards->createCards($this->card_initial);
+
+    // 2 players mode: not all cards are used
+    if(count($players) <= 2)
     {
-        $result = array( 'players' => array() );
-
-        // Add players haggistwo specific infos
-        $sql = "SELECT player_id id, player_score score, player_bet, player_points_captured ";
-        $sql .= "FROM player ";
-        $sql .= "WHERE 1 ";
-        $dbres = self::DbQuery( $sql );
-        while( $player = mysql_fetch_assoc( $dbres ) )
-        {
-            $result['players'][ $player['id'] ] = $player;
-        }
-
-        // Cards in player hand
-        global $g_user;
-        $result['hand'] = $this->cards->getCardsInLocation( 'hand', $g_user->get_id() );
-
-        // Check if there is a rainbow bomb / uniform bomb
-        $result['bombcheck'] = self::checkBombsAmongCards( $result['hand'] );
-
-        // Hands infos
-        $result['handcount'] = $this->cards->countCardsByLocationArgs( 'hand' );
-
-        // Return jack/queen/king for each player
-        $result['wildcards'] = $this->cards->getCardsOfType( 'wild' );
-
-        // Cards on table
-        $result['table'] = $this->cards->getCardsInLocation( 'table' );
-
-        // Player / combo association
-        $sql = "SELECT combo_id id, combo_player_id player_id, combo_display display FROM combo ORDER BY combo_id";
-        $result['combo'] = self::getCollectionFromDB( $sql );
-        foreach( $result['combo'] as $combo_id => $combo )
-        {
-            $result['combo'][$combo_id]['display'] = explode( ',', $combo['display'] );
-        }
-
-        return $result;
+      // .. remove a serie
+      $sql = "UPDATE card SET card_location='removed' WHERE card_type='4' ";
+      self::DbQuery( $sql );
     }
 
-    // Return an array with options infos for this game
-    function getGameOptionsInfos()
+    self::setGameStateInitialValue('dealer', 0);
+    self::setGameStateInitialValue('lastTrickWinner', 0);
+    self::setGameStateInitialValue('lastRoundWinner', 0);
+    self::setGameStateInitialValue('combotype', 0);        // 0 = no combo / 1 = set / 2 = sequence / 3 = bomb
+    self::setGameStateInitialValue('combonbr', 0);         // number of cards of current combo
+    self::setGameStateInitialValue('comboserienbr', 0);    // number of series of current combo
+    self::setGameStateInitialValue('combovalue', 0);       // value of current combo
+    self::setGameStateInitialValue('lastComboPlayer', 0);  // player who played the last non void combo
+    self::setGameStateInitialValue('nbrPass', 0);          // number of consecutive pass
+    self::setGameStateInitialValue('nbrPassToWin', 2);     // number of consecutive pass needed to win the trick
+
+    self::initStat('table', 'round_number', 0);
+    self::initStat('table', 'trick_number', 0);
+    self::initStat('table', 'trick_bombed', 0);
+
+    self::initStat('player', 'tricks_win', 0);
+    self::initStat('player', 'bomb_number', 0);
+    self::initStat('player', 'littlebet_number', 0);
+    self::initStat('player', 'bigbet_number', 0);
+    self::initStat('player', 'successfulbet_number', 0);
+  }
+
+  // Get all datas (complete reset request from client side)
+  protected function getAllDatas()
+  {
+    $result = array('players' => array());
+
+    // Add players haggistwo specific infos
+    $sql = "SELECT player_id id, player_score score, player_bet, player_points_captured ";
+    $sql .= "FROM player ";
+    $sql .= "WHERE 1 ";
+    $dbres = self::DbQuery( $sql );
+
+    while( $player = mysql_fetch_assoc( $dbres ) )
     {
-        return array(
-            10 => array(
-                'name' => self::_('Game duration'),
-                'values' => array(
-                            2 => self::_('Long game (350 points)'),
-                            1 => self::_('Short game (250 points)')
-                        )
-            )
-        );
+      $result['players'][ $player['id'] ] = $player;
     }
 
-    function getGameProgression()
-    {
-        // Game progression: get player maximum score
-        $max_score = self::getUniqueValueFromDB( "SELECT MAX(player_score ) FROM player", true );
-        $limit_score = 250;
-        if( self::getGameStateValue( 'game_duration' ) == 2 )
-            $limit_score = 350;
+    // Cards in player hand
+    global $g_user;
+    $result['hand'] = $this->cards->getCardsInLocation( 'hand', $g_user->get_id() );
 
-        return round( min( 100, 100*$max_score / $limit_score ) );
+    // Check if there is a rainbow bomb / uniform bomb
+    $result['bombcheck'] = self::checkBombsAmongCards( $result['hand'] );
+
+    // Hands infos
+    $result['handcount'] = $this->cards->countCardsByLocationArgs( 'hand' );
+
+    // Return jack/queen/king for each player
+    $result['wildcards'] = $this->cards->getCardsOfType( 'wild' );
+
+    // Cards on table
+    $result['table'] = $this->cards->getCardsInLocation( 'table' );
+
+    // Player / combo association
+    $sql = "SELECT combo_id id, combo_player_id player_id, combo_display display FROM combo ORDER BY combo_id";
+    $result['combo'] = self::getCollectionFromDB( $sql );
+    
+    foreach( $result['combo'] as $combo_id => $combo )
+    {
+      $result['combo'][$combo_id]['display'] = explode( ',', $combo['display'] );
     }
+
+    return $result;
+  }
+
+  // Return an array with options infos for this game
+  function getGameOptionsInfos()
+  {
+    return 
+      array( 10 => 
+                array( 'name' => self::_('Game duration')
+                     , 'values' => 
+                           array( 2 => self::_('Long game (350 points)')
+                                , 1 => self::_('Short game (250 points)')
+                                )
+                     )
+           );
+  }
+
+  function getGameProgression()
+  {
+    // Game progression: get player maximum score
+    $max_score = 
+      self::getUniqueValueFromDB("SELECT MAX(player_score) FROM player", true);
+        
+    $limit_score 
+      = self::getGameStateValue('game_duration') == 2
+      ? 350
+      : 250;           
+
+    return round(min(100, 100 * $max_score / $limit_score));
+  }
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -175,223 +182,297 @@ class HaggisTwo extends Table
 ////////////
 
 
-    // Analyse played combo
-    // Return an array of possible combos = object of this kind:
-    //  array( "type" => set/sequence/bomb,
-    //         "value" => value of the combo (the higher, the better)
-    //         "serienbr" => number of different serie
-    //         "nbr" => number of cards
-    //         "display" => cards ids in right order for display )
-    //  ... or null if this is an invalid combo
-    function analyzeCombo( $cards )
+  // Analyse played combo
+  // Return an array of possible combos = object of this kind:
+  //  array( "type" => set/sequence/bomb,
+  //         "value" => value of the combo (the higher, the better)
+  //         "serienbr" => number of different serie
+  //         "nbr" => number of cards
+  //         "display" => cards ids in right order for display )
+  //  ... or null if this is an invalid combo
+  function analyzeCombo( $cards )
+  {
+    $combo = new Haggis\Cards\Combo($cards);
+    return $combo->get_possible_combinations(); 
+  }
+
+
+  function combo_type_to_id( $combo_type )
+  {
+    switch( $combo_type )
     {
-      $combo = new Haggis\Cards\Combo($cards);
-      return $combo->get_possible_combinations(); 
+      case 'set':         
+          return 1;
+
+      case 'sequence':    
+          return 2;
+
+      case 'bomb':        
+          return 3;
+
+      default:    
+          throw new feException( 'invalid combo type' );
+    }
+  }
+
+  function endCurrentTrick()
+  {
+    $players = self::loadPlayersBasicInfos();
+    $bIsABombTrick = (self::getGameStateValue( 'combotype' ) == self::combo_type_to_id('bomb') );
+
+    $trickWinner = self::getGameStateValue( 'lastComboPlayer' );
+    self::setGameStateValue( 'lastTrickWinner', $trickWinner );
+    self::incStat( 1, 'tricks_win', $trickWinner );
+    self::incStat( 1, 'trick_bombed' );
+
+    if (!$bIsABombTrick)
+    {
+        $card_goes_to = $trickWinner;
+    }
+    else
+    {
+      // Bomb trick !
+      // Get the second highest combo player
+      $sql = "SELECT combo_player_id FROM `combo` WHERE combo_display!='' ORDER BY combo_id DESC LIMIT 1,1";
+      $second_best_combo_player_id = self::getUniqueValueFromDB( $sql );
+      
+      if ($second_best_combo_player_id !== null)
+      {
+          $card_goes_to = $second_best_combo_player_id;
+      }
+      else
+      {
+        // Lead bomb => cards goes to the player at the left of the trick winner
+        $card_goes_to = self::getPlayerBefore( $trickWinner );
+      }
     }
 
+    // Get captured cards score
+    $score = 0;
+    $tablecards = $this->cards->getCardsInLocation( 'table' );
+    $score = self::getCardsPoints( $tablecards );
 
-    function combo_type_to_id( $combo_type )
+    $sql = "UPDATE player SET player_points_captured=player_points_captured+$score WHERE player_id='$card_goes_to' ";
+    self::DbQuery( $sql );
+
+    // All cards on table are captured by trick winner
+    $this->cards->moveAllCardsInLocation( 'table', 'captured', null, $card_goes_to );
+
+    if ($card_goes_to == $trickWinner)
     {
-        switch( $combo_type )
+      self::notifyAllPlayers( 'captureCards'
+                            
+                            , clienttranslate('${player_name} wins the trick and gets all cards')
+                            
+                            , array( 'player_id' => 
+                                        $trickWinner
+                                   
+                                   , 'player_name' => 
+                                        $players[ $trickWinner ]['player_name']
+
+                                   , 'score' => 
+                                        $score
+                                   ) 
+                            );
+    }
+    else
+    {
+      self::notifyAllPlayers( 'winTrick'
+                            
+                            , clienttranslate('${player_name} wins the trick')
+                            
+                            , array( 'player_id' => 
+                                        $trickWinner
+                                  
+                                    , 'player_name' => 
+                                        $players[ $trickWinner ]['player_name']
+                                    ) 
+                            );
+
+      self::notifyAllPlayers( 'captureCards'
+      
+                            , clienttranslate('${player_name} gets all cards')
+                            
+                            , array( 'player_id' => 
+                                        $card_goes_to
+                                   
+                                   , 'player_name' => 
+                                        $players[ $card_goes_to ]['player_name']
+                                        
+                                   , 'score' => 
+                                        $score
+                                   ) 
+                            );
+    }
+  }
+
+  function getCardsPoints($cards)
+  {
+    $score = 0;
+
+    foreach ($cards as $card)
+    {
+      if ($card['type']=='wild')
+      {
+        if ($card['type_arg'] == 11)
+            $score += 2;    // J
+        else if ($card['type_arg'] == 12)
+            $score += 3;    // Q
+        else if ($card['type_arg'] == 13)
+            $score += 5;    // K
+      }
+      else
+      { // odd number, 3/5/7/9, are 1 point cards
+        if ($card['type_arg'] % 2 == 1)  
+            $score++;
+      }
+    }
+
+    return $score;
+  }
+
+  // Send all remaining cards + haggistwo to round winner
+  function sendRemainingCardsToRoundWinner()
+  {
+    $card_goes_to = self::getGameStateValue( 'lastRoundWinner' );
+
+    // Get captured cards score
+    $handcards = $this->cards->getCardsInLocation( 'hand' );
+    $score = self::getCardsPoints( $handcards );
+    $haggistwocards = $this->cards->getCardsInLocation( 'haggistwo' );
+    $score += self::getCardsPoints( $haggistwocards );
+
+    $sql = "UPDATE player
+            SET player_points_captured=player_points_captured+$score
+            WHERE player_id='$card_goes_to' ";
+    self::DbQuery( $sql );
+
+    // All cards are captured by round winner
+    $this->cards->moveAllCardsInLocation( 'hand', 'captured', null, $card_goes_to );
+    $this->cards->moveAllCardsInLocation( 'haggistwo', 'captured', null, $card_goes_to );
+
+    $players = self::loadPlayersBasicInfos();
+
+    self::notifyAllPlayers( 'finalCapture'
+                          
+                          , clienttranslate('${player_name} goes out first: he takes all remaining cards and HaggisTwo and gets ${score} points')
+                          
+                          , array( 'player_id' => 
+                                      $card_goes_to
+
+                                 , 'player_name' => 
+                                      $players[ $card_goes_to ]['player_name']
+                                 
+                                 , 'score' => 
+                                      $score
+                                 ) 
+                          );
+  }
+
+  function resolveBets( $winner_id )
+  {
+    // Get all bets
+    $sql = "SELECT player_id, player_bet FROM player ";
+    $bets = self::getCollectionFromDB($sql, true);
+
+    $players = self::loadPlayersBasicInfos();
+
+    // Get all players who will get the points of unsuccessful bets ("betfailtargets")
+    $betfailtargets = array();
+
+    foreach ($players as $player_id => $player)
+    {
+      $player_bet = $bets[ $player_id ];
+      $bNoBet = ($player_bet == null || $player_bet == 'no');
+      
+      if ($player_id == $winner_id) 
+          $betfailtargets[] = $player_id; // Winner always gets the points from unsuccessful bets
+      else if ($bNoBet)
+          $betfailtargets[] = $player_id; // Player who did not bet gets the points from unsuccessful bets too
+    }
+
+    foreach ($players as $player_id => $player)
+    {
+      $player_bet = $bets[$player_id];
+      $bNoBet = ($player_bet == null || $player_bet == 'no');
+      $points_win = 0;
+
+      if ($player_id == $winner_id)
+      {
+        // Winner's bet
+        if ($player_bet=='little')
+            $points_win = 15;
+        else if ($player_bet == 'big')
+            $points_win = 30;
+
+        if ($points_win > 0)
         {
-            case 'set':         return 1;
-            case 'sequence':    return 2;
-            case 'bomb':        return 3;
-            default:    throw new feException( 'invalid combo type' );
+          self::incStat( 1, 'successfulbet_number', $player_id );
+          $sql = "UPDATE player
+                  SET player_score=player_score+$points_win,
+                  player_points_bet=player_points_bet+$points_win
+                  WHERE player_id='$player_id' ";
+          self::DbQuery( $sql );
+          
+          self::notifyAllPlayers( 'betresult'
+                                
+                                , clienttranslate('${player_name} made a successful bet a gets ${points} points')
+                                
+                                , array( "player_id" => 
+                                            $player_id
+                                       
+                                       , "player_name" => 
+                                            $players[$player_id]['player_name']
+                                       
+                                       , "points" => 
+                                            $points_win
+                                       ) 
+                                );
         }
-    }
-
-   function endCurrentTrick()
-    {
-        $players = self::loadPlayersBasicInfos();
-        $bIsABombTrick = (self::getGameStateValue( 'combotype' ) == self::combo_type_to_id('bomb') );
-
-        $trickWinner = self::getGameStateValue( 'lastComboPlayer' );
-        self::setGameStateValue( 'lastTrickWinner', $trickWinner );
-        self::incStat( 1, 'tricks_win', $trickWinner );
-        self::incStat( 1, 'trick_bombed' );
-
-        if( !$bIsABombTrick )
-            $card_goes_to = $trickWinner;
+      }
+      else
+      {
+        // Other player's bets
+        if( $bNoBet )
+        {
+            // This player did not bet, and did not win: nothing to do
+        }
         else
         {
-            // Bomb trick !
-            // Get the second highest combo player
-            $sql = "SELECT combo_player_id FROM `combo` WHERE combo_display!='' ORDER BY combo_id DESC LIMIT 1,1";
-            $second_best_combo_player_id = self::getUniqueValueFromDB( $sql );
-            if( $second_best_combo_player_id !== null )
-                $card_goes_to = $second_best_combo_player_id;
-            else
-            {
-                // Lead bomb => cards goes to the player at the left of the trick winner
-                $card_goes_to = self::getPlayerBefore( $trickWinner );
-            }
+          // This player makes a bet and loose => redistribute points to "betfailtargets"
+          if( $player_bet=='little' )
+              $points_win = 15;
+          else if( $player_bet == 'big' )
+              $points_win = 30;
+
+          $sql = "UPDATE player
+                  SET player_score=player_score+$points_win ,
+                  player_points_bet=player_points_bet+$points_win
+                  WHERE player_id IN ('".implode( "','",$betfailtargets )."')";
+          self::DbQuery( $sql );
+
+          self::notifyAllPlayers( 'betresult'
+                                
+                                , clienttranslate('${player_name} made a unsuccessful bet: points go to those who did not failed')
+                                
+                                , array( "player_id" => 
+                                            $player_id
+                                      
+                                       , "player_name" => 
+                                            $players[$player_id]['player_name']
+                                        
+                                       , "points" => 
+                                            $points_win
+                                       
+                                       , "targets" => 
+                                            $betfailtargets
+                                       ) 
+                                );
         }
+      }
 
-        // Get captured cards score
-        $score = 0;
-        $tablecards = $this->cards->getCardsInLocation( 'table' );
-        $score = self::getCardsPoints( $tablecards );
-
-        $sql = "UPDATE player SET player_points_captured=player_points_captured+$score WHERE player_id='$card_goes_to' ";
-        self::DbQuery( $sql );
-
-        // All cards on table are captured by trick winner
-        $this->cards->moveAllCardsInLocation( 'table', 'captured', null, $card_goes_to );
-
-        if( $card_goes_to == $trickWinner )
-        {
-            self::notifyAllPlayers( 'captureCards', clienttranslate('${player_name} wins the trick and gets all cards'), array(
-                'player_id' => $trickWinner,
-                'player_name' => $players[ $trickWinner ]['player_name'],
-                'score' => $score
-            ) );
-        }
-        else
-        {
-            self::notifyAllPlayers( 'winTrick', clienttranslate('${player_name} wins the trick'), array(
-                'player_id' => $trickWinner,
-                'player_name' => $players[ $trickWinner ]['player_name']
-            ) );
-            self::notifyAllPlayers( 'captureCards', clienttranslate('${player_name} gets all cards'), array(
-                'player_id' => $card_goes_to,
-                'player_name' => $players[ $card_goes_to ]['player_name'],
-                'score' => $score
-            ) );
-        }
     }
-
-    function getCardsPoints( $cards )
-    {
-        $score = 0;
-        foreach( $cards as $card )
-        {
-            if( $card['type']=='wild' )
-            {
-                if( $card['type_arg'] == 11 )
-                    $score += 2;    // J
-                else if( $card['type_arg'] == 12 )
-                    $score += 3;    // Q
-                else if( $card['type_arg'] == 13 )
-                    $score += 5;    // K
-            }
-            else
-            {
-                if( $card['type_arg']%2 == 1 )  // odd number, 3/5/7/9, are 1 point cards
-                    $score ++;
-            }
-        }
-        return $score;
-    }
-
-    // Send all remaining cards + haggistwo to round winner
-    function sendRemainingCardsToRoundWinner()
-    {
-        $card_goes_to = self::getGameStateValue( 'lastRoundWinner' );
-
-        // Get captured cards score
-        $handcards = $this->cards->getCardsInLocation( 'hand' );
-        $score = self::getCardsPoints( $handcards );
-        $haggistwocards = $this->cards->getCardsInLocation( 'haggistwo' );
-        $score += self::getCardsPoints( $haggistwocards );
-
-        $sql = "UPDATE player
-                SET player_points_captured=player_points_captured+$score
-                WHERE player_id='$card_goes_to' ";
-        self::DbQuery( $sql );
-
-        // All cards are captured by round winner
-        $this->cards->moveAllCardsInLocation( 'hand', 'captured', null, $card_goes_to );
-        $this->cards->moveAllCardsInLocation( 'haggistwo', 'captured', null, $card_goes_to );
-
-        $players = self::loadPlayersBasicInfos();
-        self::notifyAllPlayers( 'finalCapture', clienttranslate('${player_name} goes out first: he takes all remaining cards and HaggisTwo and gets ${score} points'), array(
-            'player_id' => $card_goes_to,
-            'player_name' => $players[ $card_goes_to ]['player_name'],
-            'score' => $score
-        ) );
-    }
-
-    function resolveBets( $winner_id )
-    {
-        // Get all bets
-        $sql = "SELECT player_id, player_bet FROM player ";
-        $bets = self::getCollectionFromDB( $sql, true );
-
-        $players = self::loadPlayersBasicInfos();
-
-        // Get all players who will get the points of unsuccessful bets ("betfailtargets")
-        $betfailtargets = array();
-        foreach( $players as $player_id => $player )
-        {
-            $player_bet = $bets[ $player_id ];
-            $bNoBet = ( $player_bet==null || $player_bet=='no' );
-            if( $player_id == $winner_id )
-                $betfailtargets[] = $player_id; // Winner always gets the points from unsuccessful bets
-            else if( $bNoBet )
-                $betfailtargets[] = $player_id; // Player who did not bet gets the points from unsuccessful bets too
-        }
-
-        foreach( $players as $player_id => $player )
-        {
-            $player_bet = $bets[ $player_id ];
-            $bNoBet = ( $player_bet==null || $player_bet=='no' );
-            $points_win = 0;
-
-            if( $player_id == $winner_id )
-            {
-                // Winner's bet
-                if( $player_bet=='little' )
-                    $points_win = 15;
-                else if( $player_bet == 'big' )
-                    $points_win = 30;
-
-                if( $points_win > 0 )
-                {
-                    self::incStat( 1, 'successfulbet_number', $player_id );
-                    $sql = "UPDATE player
-                            SET player_score=player_score+$points_win,
-                            player_points_bet=player_points_bet+$points_win
-                            WHERE player_id='$player_id' ";
-                    self::DbQuery( $sql );
-                    self::notifyAllPlayers( 'betresult', clienttranslate('${player_name} made a successful bet a gets ${points} points'), array(
-                        "player_id" => $player_id,
-                        "player_name" => $players[$player_id]['player_name'],
-                        "points" => $points_win
-                    ) );
-                }
-            }
-            else
-            {
-                // Other player's bets
-                if( $bNoBet )
-                {
-                    // This player did not bet, and did not win: nothing to do
-                }
-                else
-                {
-                    // This player makes a bet and loose => redistribute points to "betfailtargets"
-                    if( $player_bet=='little' )
-                        $points_win = 15;
-                    else if( $player_bet == 'big' )
-                        $points_win = 30;
-
-                    $sql = "UPDATE player
-                            SET player_score=player_score+$points_win ,
-                            player_points_bet=player_points_bet+$points_win
-                            WHERE player_id IN ('".implode( "','",$betfailtargets )."')";
-                    self::DbQuery( $sql );
-                    self::notifyAllPlayers( 'betresult', clienttranslate('${player_name} made a unsuccessful bet: points go to those who did not failed'), array(
-                        "player_id" => $player_id,
-                        "player_name" => $players[$player_id]['player_name'],
-                        "points" => $points_win,
-                        "targets" => $betfailtargets
-                    ) );
-                }
-            }
-
-        }
-    }
+  }
 
     // Check if there is a possibility to play a rainbow / uniform bomb among current set of cards
     function checkBombsAmongCards( $cards )

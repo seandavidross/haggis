@@ -25,7 +25,8 @@ namespace Haggis\Cards
 
       list( $this->cards_by_suit
           , $this->cards_by_rank
-          , $this->wild_card_ids) = $this->group_cards_by_suit_and_rank_();       
+          , $this->wild_card_ids
+          ) = $this->group_cards_by_suit_and_rank_();       
 
       $this->suit_count = $this->count_suits_();
 
