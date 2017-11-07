@@ -56,16 +56,31 @@ class HaggisTwo extends Table
     self::DbQuery( $sql );
 
     // Create players
-    $default_color = array( "ff0000", "008000", "0000ff", "ffa500" );
+    $default_color = array("ff0000", "008000", "0000ff", "ffa500");
     $values = array();
 
     foreach( $players as $player_id => $player )
     {
       $color = array_shift( $default_color );
-      $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+      $values[] 
+        = "('" 
+        . $player_id 
+        . "','$color','" 
+        . $player['player_canal'] 
+        . "','"
+        . addslashes( $player['player_name'] ) 
+        . "','" 
+        . addslashes( $player['player_avatar'] ) 
+        . "')";
     }
 
-    $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
+    $sql = "INSERT INTO player ( player_id
+                               , player_color
+                               , player_canal
+                               , player_name
+                               , player_avatar
+                               ) 
+            VALUES ";
     $sql .= implode( $values, ',' );
     self::DbQuery( $sql );
     
@@ -110,7 +125,10 @@ class HaggisTwo extends Table
     $result = array('players' => array());
 
     // Add players haggistwo specific infos
-    $sql = "SELECT player_id id, player_score score, player_bet, player_points_captured ";
+    $sql = "SELECT player_id id
+                 , player_score score
+                 , player_bet
+                 , player_points_captured ";
     $sql .= "FROM player ";
     $sql .= "WHERE 1 ";
     $dbres = self::DbQuery( $sql );
@@ -137,7 +155,11 @@ class HaggisTwo extends Table
     $result['table'] = $this->cards->getCardsInLocation( 'table' );
 
     // Player / combo association
-    $sql = "SELECT combo_id id, combo_player_id player_id, combo_display display FROM combo ORDER BY combo_id";
+    $sql = 
+      "SELECT combo_id id, combo_player_id player_id, combo_display display 
+       FROM combo 
+       ORDER BY combo_id";
+    
     $result['combo'] = self::getCollectionFromDB( $sql );
     
     foreach( $result['combo'] as $combo_id => $combo )
@@ -218,7 +240,9 @@ class HaggisTwo extends Table
   function endCurrentTrick()
   {
     $players = self::loadPlayersBasicInfos();
-    $bIsABombTrick = (self::getGameStateValue( 'combotype' ) == self::combo_type_to_id('bomb') );
+    
+    $bIsABombTrick = 
+        self::getGameStateValue('combotype') == self::combo_type_to_id('bomb');
 
     $trickWinner = self::getGameStateValue( 'lastComboPlayer' );
     self::setGameStateValue( 'lastTrickWinner', $trickWinner );
@@ -233,7 +257,13 @@ class HaggisTwo extends Table
     {
       // Bomb trick !
       // Get the second highest combo player
-      $sql = "SELECT combo_player_id FROM `combo` WHERE combo_display!='' ORDER BY combo_id DESC LIMIT 1,1";
+      $sql = 
+          "SELECT combo_player_id 
+           FROM `combo` 
+           WHERE combo_display!='' 
+           ORDER BY combo_id 
+           DESC LIMIT 1,1";
+
       $second_best_combo_player_id = self::getUniqueValueFromDB( $sql );
       
       if ($second_best_combo_player_id !== null)
@@ -252,7 +282,10 @@ class HaggisTwo extends Table
     $tablecards = $this->cards->getCardsInLocation( 'table' );
     $score = self::getCardsPoints( $tablecards );
 
-    $sql = "UPDATE player SET player_points_captured=player_points_captured+$score WHERE player_id='$card_goes_to' ";
+    $sql = "UPDATE player 
+            SET player_points_captured=player_points_captured+$score 
+            WHERE player_id='$card_goes_to' ";
+
     self::DbQuery( $sql );
 
     // All cards on table are captured by trick winner
@@ -262,7 +295,9 @@ class HaggisTwo extends Table
     {
       self::notifyAllPlayers( 'captureCards'
                             
-                            , clienttranslate('${player_name} wins the trick and gets all cards')
+                            , clienttranslate( '${player_name} wins the trick '
+                                             . 'and gets all cards'
+                                             )
                             
                             , array( 'player_id' => 
                                         $trickWinner
@@ -348,14 +383,26 @@ class HaggisTwo extends Table
     self::DbQuery( $sql );
 
     // All cards are captured by round winner
-    $this->cards->moveAllCardsInLocation( 'hand', 'captured', null, $card_goes_to );
-    $this->cards->moveAllCardsInLocation( 'haggistwo', 'captured', null, $card_goes_to );
+    $this->cards->moveAllCardsInLocation( 'hand'
+                                        , 'captured'
+                                        , null
+                                        , $card_goes_to 
+                                        );
+    
+    $this->cards->moveAllCardsInLocation( 'haggistwo'
+                                        , 'captured'
+                                        , null
+                                        , $card_goes_to 
+                                        );
 
     $players = self::loadPlayersBasicInfos();
 
     self::notifyAllPlayers( 'finalCapture'
                           
-                          , clienttranslate('${player_name} goes out first: he takes all remaining cards and HaggisTwo and gets ${score} points')
+                          , clienttranslate( '${player_name} goes out first: he'
+                                           . ' takes all remaining cards and '
+                                           . 'HaggisTwo and gets ${score} points'
+                                           )
                           
                           , array( 'player_id' => 
                                       $card_goes_to
@@ -416,7 +463,10 @@ class HaggisTwo extends Table
           
           self::notifyAllPlayers( 'betresult'
                                 
-                                , clienttranslate('${player_name} made a successful bet a gets ${points} points')
+                                , clienttranslate( '${player_name} made a '
+                                                 . 'successful bet a gets '
+                                                 . '${points} points'
+                                                 )
                                 
                                 , array( "player_id" => 
                                             $player_id
@@ -453,7 +503,10 @@ class HaggisTwo extends Table
 
           self::notifyAllPlayers( 'betresult'
                                 
-                                , clienttranslate('${player_name} made a unsuccessful bet: points go to those who did not failed')
+                                , clienttranslate( '${player_name} made a '
+                                                 . 'unsuccessful bet: points go'
+                                                 . ' to those who did not failed'
+                                                 )
                                 
                                 , array( "player_id" => 
                                             $player_id
