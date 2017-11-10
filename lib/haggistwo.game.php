@@ -63,25 +63,24 @@ class HaggisTwo extends Table
     {
       $color = array_shift( $default_color );
       $values[] 
-        = "('" 
-        . $player_id 
-        . "','$color','" 
-        . $player['player_canal'] 
-        . "','"
-        . addslashes( $player['player_name'] ) 
-        . "','" 
-        . addslashes( $player['player_avatar'] ) 
+        = "('"  . $player_id 
+        . "','" . "$color"
+        . "','" . $player['player_canal'] 
+        . "','" . addslashes( $player['player_name'] ) 
+        . "','" . addslashes( $player['player_avatar'] ) 
         . "')";
     }
 
-    $sql = "INSERT INTO player ( player_id
-                               , player_color
-                               , player_canal
-                               , player_name
-                               , player_avatar
-                               ) 
-            VALUES ";
-    $sql .= implode( $values, ',' );
+    $sql = "INSERT INTO player "
+         . " ( player_id" 
+         . " , player_color"
+         . " , player_canal"
+         . " , player_name"
+         . " , player_avatar"
+         . " )" 
+         . " VALUES "
+         . implode( $values, ',' );
+
     self::DbQuery( $sql );
     
     self::reloadPlayersBasicInfos();
@@ -125,12 +124,13 @@ class HaggisTwo extends Table
     $result = array('players' => array());
 
     // Add players haggistwo specific infos
-    $sql = "SELECT player_id id
-                 , player_score score
-                 , player_bet
-                 , player_points_captured ";
-    $sql .= "FROM player ";
-    $sql .= "WHERE 1 ";
+    $sql = "SELECT player_id id"
+         . "     , player_score score"
+         . "     , player_bet"
+         . "     , player_points_captured "
+         . "FROM player "
+         . "WHERE 1 ";
+         
     $dbres = self::DbQuery( $sql );
 
     while( $player = mysql_fetch_assoc( $dbres ) )
@@ -156,10 +156,11 @@ class HaggisTwo extends Table
     $result['table'] = $this->cards->getCardsInLocation( 'table' );
 
     // Player / combo association
-    $sql = 
-      "SELECT combo_id id, combo_player_id player_id, combo_display display 
-       FROM combo 
-       ORDER BY combo_id";
+    $sql = "SELECT combo_id id"
+         . "     , combo_player_id player_id"
+         . "     , combo_display display" 
+         . "FROM combo "
+         . "ORDER BY combo_id";
     
     $result['combo'] = self::getCollectionFromDB( $sql );
     
@@ -176,12 +177,17 @@ class HaggisTwo extends Table
   {
     return 
       array( 10 => 
-                array( 'name' => self::_('Game duration')
-                     , 'values' => 
-                           array( 2 => self::_('Long game (350 points)')
-                                , 1 => self::_('Short game (250 points)')
-                                )
-                     )
+              array( 'name' => 
+                        self::_('Game duration')
+                    
+                   , 'values' => 
+                        array( 2 => 
+                                  self::_('Long game (350 points)')
+                  
+                             , 1 => 
+                                  self::_('Short game (250 points)')
+                             )
+                   )
            );
   }
 
@@ -258,24 +264,18 @@ class HaggisTwo extends Table
     {
       // Bomb trick !
       // Get the second highest combo player
-      $sql = 
-          "SELECT combo_player_id 
-           FROM `combo` 
-           WHERE combo_display!='' 
-           ORDER BY combo_id 
-           DESC LIMIT 1,1";
+      $sql = "SELECT combo_player_id "
+           . "FROM `combo` "
+           . "WHERE combo_display!='' "
+           . "ORDER BY combo_id "
+           . "DESC LIMIT 1,1";
 
       $second_best_combo_player_id = self::getUniqueValueFromDB( $sql );
       
-      if ($second_best_combo_player_id !== null)
-      {
-          $card_goes_to = $second_best_combo_player_id;
-      }
-      else
-      {
-        // Lead bomb => cards goes to the player at the left of the trick winner
-        $card_goes_to = self::getPlayerBefore( $trickWinner );
-      }
+      $card_goes_to
+        = ($second_best_combo_player_id !== null)
+        ? $second_best_combo_player_id
+        : self::getPlayerBefore( $trickWinner );
     }
 
     // Get captured cards score
@@ -283,14 +283,16 @@ class HaggisTwo extends Table
     $tablecards = $this->cards->getCardsInLocation( 'table' );
     $score = self::getCardsPoints( $tablecards );
 
-    $sql = "UPDATE player 
-            SET player_points_captured=player_points_captured+$score 
-            WHERE player_id='$card_goes_to' ";
+    $sql = "UPDATE player "
+         . "SET player_points_captured=player_points_captured+$score "
+         . "WHERE player_id='$card_goes_to' ";
 
     self::DbQuery( $sql );
 
     // All cards on table are captured by trick winner
-    $this->cards->moveAllCardsInLocation( 'table', 'captured', null, $card_goes_to );
+    $this
+      ->cards
+        ->moveAllCardsInLocation('table', 'captured', null, $card_goes_to);
 
     if ($card_goes_to == $trickWinner)
     {
@@ -381,20 +383,25 @@ class HaggisTwo extends Table
     $sql = "UPDATE player
             SET player_points_captured=player_points_captured+$score
             WHERE player_id='$card_goes_to' ";
+
     self::DbQuery( $sql );
 
     // All cards are captured by round winner
-    $this->cards->moveAllCardsInLocation( 'hand'
-                                        , 'captured'
-                                        , null
-                                        , $card_goes_to 
-                                        );
+    $this
+      ->cards
+        ->moveAllCardsInLocation( 'hand'
+                                , 'captured'
+                                , null
+                                , $card_goes_to 
+                                );
     
-    $this->cards->moveAllCardsInLocation( 'haggistwo'
-                                        , 'captured'
-                                        , null
-                                        , $card_goes_to 
-                                        );
+    $this
+      ->cards
+        ->moveAllCardsInLocation( 'haggistwo'
+                                , 'captured'
+                                , null
+                                , $card_goes_to 
+                                );
 
     $players = self::loadPlayersBasicInfos();
 
@@ -456,10 +463,12 @@ class HaggisTwo extends Table
         if ($points_win > 0)
         {
           self::incStat( 1, 'successfulbet_number', $player_id );
-          $sql = "UPDATE player
-                  SET player_score=player_score+$points_win,
-                  player_points_bet=player_points_bet+$points_win
-                  WHERE player_id='$player_id' ";
+          
+          $sql = "UPDATE player "
+               . "SET player_score=player_score+$points_win"
+               . "  , player_points_bet=player_points_bet+$points_win"
+               . "WHERE player_id='$player_id' ";
+          
           self::DbQuery( $sql );
           
           self::notifyAllPlayers( 'betresult'
@@ -484,11 +493,7 @@ class HaggisTwo extends Table
       else
       {
         // Other player's bets
-        if( $bNoBet )
-        {
-            // This player did not bet, and did not win: nothing to do
-        }
-        else
+        if( !$bNoBet )
         {
           // This player makes a bet and loose => redistribute points to "betfailtargets"
           if( $player_bet=='little' )
@@ -496,10 +501,12 @@ class HaggisTwo extends Table
           else if( $player_bet == 'big' )
               $points_win = 30;
 
-          $sql = "UPDATE player
-                  SET player_score=player_score+$points_win ,
-                  player_points_bet=player_points_bet+$points_win
-                  WHERE player_id IN ('".implode( "','",$betfailtargets )."')";
+          $sql = "UPDATE player "
+               . "SET player_score=player_score+$points_win "
+               . "  , player_points_bet=player_points_bet+$points_win"
+               . "WHERE player_id IN "
+               . "('" . implode("','", $betfailtargets) . "')";
+
           self::DbQuery( $sql );
 
           self::notifyAllPlayers( 'betresult'
@@ -1090,39 +1097,10 @@ class HaggisTwo extends Table
 //////////// End of game management
 ////////////
 
-
+  // By default, common method uses 'player_rank' field to create this object
   protected function getGameRankInfos()
-  {
-
-    //  $result = array(   "table" => array( "stats" => array( 1 => 0.554, 2 => 54, 3 => 56 ) ),       // game statistics
-    //                     "result" => array(
-    //                                     array( "rank" => 1,
-    //                                            "tie" => false,
-    //                                            "score" => 354,
-    //                                            "player" => 45,
-    //                                            "name" => "Kara Thrace",
-    //                                            "zombie" => 0,
-    //                                            "stats" => array( 1 => 0.554, 2 => 54, 3 => 56 ) ),
-    //                                     array( "rank" => 2,
-    //                                            "tie" => false,
-    //                                            "score" => 312,
-    //                                            "player" => 46,
-    //                                            "name" => "Lee Adama",
-    //                                            "zombie" => 0,
-    //                                            "stats" => array( 1 => 0.554, 2 => 54, 3 => 56 ) )
-    //                                     )
-    //              )
-    //
-
-
-    // By default, common method uses 'player_rank' field to create this object
-    $result = self::getStandardGameResultObject();
-
-    // Adding stats
-
-
-
-    return $result;
+  {  
+    return self::getStandardGameResultObject();
   }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1140,7 +1118,11 @@ class HaggisTwo extends Table
       self::pass();
     }
     else
-      throw new feException( "Zombie mode not supported at this game state:".$state['name'] );
+    {    
+      throw new feException( "Zombie mode not supported at this game state: "
+                           . $state['name'] 
+                           );
+    }
   }
 
   function dummy()
