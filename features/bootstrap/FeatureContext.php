@@ -170,9 +170,10 @@ class FeatureContext extends TestCase implements Context, SnippetAcceptingContex
   */
   public function the_display_size_should_be($combo_size)
   {
-    $d = count($this->possible_combination['display']);
+    $combo = $this->possible_combination['display'];
+    $d = empty($combo) ? null : count($this->possible_combination['display']);
     
-    $display_size = ($d == null) ? 'null' : $d;
+    $display_size = is_null($d) ? 'null' : $d;
     
     $this->assertEquals( $display_size, $combo_size );
   }
