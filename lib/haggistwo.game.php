@@ -40,9 +40,9 @@ class HaggisTwo extends Table
                                     ) 
                              );
 
-    $this->cards = self::getNew( "module.common.deck" );
+    $this->cards = self::getNew("module.common.deck");
     
-    $this->cards->init( "card" );
+    $this->cards->init("card");
   }
 
   function getGameName() 
@@ -50,24 +50,24 @@ class HaggisTwo extends Table
     return "haggistwo";
   }
 
-  protected function setupNewGame( $players, $options = array() )
+  protected function setupNewGame($players, $options = array())
   {
     $sql = "DELETE FROM player WHERE 1 ";
-    self::DbQuery( $sql );
+    self::DbQuery($sql);
 
     // Create players
     $default_color = array("ff0000", "008000", "0000ff", "ffa500");
     $values = array();
 
-    foreach( $players as $player_id => $player )
+    foreach ($players as $player_id => $player)
     {
-      $color = array_shift( $default_color );
+      $color = array_shift($default_color);
       $values[] 
         = "('"  . $player_id 
         . "','" . "$color"
         . "','" . $player['player_canal'] 
-        . "','" . addslashes( $player['player_name'] ) 
-        . "','" . addslashes( $player['player_avatar'] ) 
+        . "','" . addslashes($player['player_name']) 
+        . "','" . addslashes($player['player_avatar']) 
         . "')";
     }
 
@@ -79,9 +79,9 @@ class HaggisTwo extends Table
          . " , player_avatar"
          . " )" 
          . " VALUES "
-         . implode( $values, ',' );
+         . implode($values, ',');
 
-    self::DbQuery( $sql );
+    self::DbQuery($sql);
     
     self::reloadPlayersBasicInfos();
 
@@ -89,11 +89,11 @@ class HaggisTwo extends Table
     $this->cards->createCards($this->card_initial);
 
     // 2 players mode: not all cards are used
-    if(count($players) <= 2)
+    if (count($players) <= 2)
     {
       // .. remove a serie
       $sql = "UPDATE card SET card_location='removed' WHERE card_type='4' ";
-      self::DbQuery( $sql );
+      self::DbQuery($sql);
     }
 
     self::setGameStateInitialValue('dealer', 0);
@@ -131,29 +131,29 @@ class HaggisTwo extends Table
          . "FROM player "
          . "WHERE 1 ";
          
-    $dbres = self::DbQuery( $sql );
+    $dbres = self::DbQuery($sql);
 
-    while( $player = mysql_fetch_assoc( $dbres ) )
+    while ($player = mysql_fetch_assoc($dbres))
     {
-      $result['players'][ $player['id'] ] = $player;
+      $result['players'][$player['id']] = $player;
     }
 
     // Cards in player hand
     global $g_user;
     $result['hand'] = 
-        $this->cards->getCardsInLocation( 'hand', $g_user->get_id() );
+        $this->cards->getCardsInLocation('hand', $g_user->get_id());
 
     // Check if there is a rainbow bomb / uniform bomb
-    $result['bombcheck'] = self::checkBombsAmongCards( $result['hand'] );
+    $result['bombcheck'] = self::checkBombsAmongCards($result['hand']);
 
     // Hands infos
-    $result['handcount'] = $this->cards->countCardsByLocationArgs( 'hand' );
+    $result['handcount'] = $this->cards->countCardsByLocationArgs('hand');
 
     // Return jack/queen/king for each player
-    $result['wildcards'] = $this->cards->getCardsOfType( 'wild' );
+    $result['wildcards'] = $this->cards->getCardsOfType('wild');
 
     // Cards on table
-    $result['table'] = $this->cards->getCardsInLocation( 'table' );
+    $result['table'] = $this->cards->getCardsInLocation('table');
 
     // Player / combo association
     $sql = "SELECT combo_id id"
@@ -162,9 +162,9 @@ class HaggisTwo extends Table
          . "FROM combo "
          . "ORDER BY combo_id";
     
-    $result['combo'] = self::getCollectionFromDB( $sql );
+    $result['combo'] = self::getCollectionFromDB($sql);
     
-    foreach( $result['combo'] as $combo_id => $combo )
+    foreach ($result['combo'] as $combo_id => $combo)
     {
       $result['combo'][$combo_id]['display'] = explode(',', $combo['display']);
     }
@@ -251,10 +251,10 @@ class HaggisTwo extends Table
     $bIsABombTrick = 
         self::getGameStateValue('combotype') == self::combo_type_to_id('bomb');
 
-    $trickWinner = self::getGameStateValue( 'lastComboPlayer' );
-    self::setGameStateValue( 'lastTrickWinner', $trickWinner );
-    self::incStat( 1, 'tricks_win', $trickWinner );
-    self::incStat( 1, 'trick_bombed' );
+    $trickWinner = self::getGameStateValue('lastComboPlayer');
+    self::setGameStateValue('lastTrickWinner', $trickWinner);
+    self::incStat(1, 'tricks_win', $trickWinner);
+    self::incStat(1, 'trick_bombed');
 
     if (!$bIsABombTrick)
     {
@@ -270,18 +270,18 @@ class HaggisTwo extends Table
            . "ORDER BY combo_id "
            . "DESC LIMIT 1,1";
 
-      $second_best_combo_player_id = self::getUniqueValueFromDB( $sql );
+      $second_best_combo_player_id = self::getUniqueValueFromDB($sql);
       
       $card_goes_to
         = ($second_best_combo_player_id !== null)
         ? $second_best_combo_player_id
-        : self::getPlayerBefore( $trickWinner );
+        : self::getPlayerBefore($trickWinner);
     }
 
     // Get captured cards score
     $score = 0;
-    $tablecards = $this->cards->getCardsInLocation( 'table' );
-    $score = self::getCardsPoints( $tablecards );
+    $tablecards = $this->cards->getCardsInLocation('table');
+    $score = self::getCardsPoints($tablecards);
 
     $sql = "UPDATE player "
          . "SET player_points_captured=player_points_captured+$score "
@@ -306,7 +306,7 @@ class HaggisTwo extends Table
                                         $trickWinner
                                    
                                    , 'player_name' => 
-                                        $players[ $trickWinner ]['player_name']
+                                        $players[$trickWinner]['player_name']
 
                                    , 'score' => 
                                         $score
@@ -323,7 +323,7 @@ class HaggisTwo extends Table
                                         $trickWinner
                                   
                                     , 'player_name' => 
-                                        $players[ $trickWinner ]['player_name']
+                                        $players[$trickWinner]['player_name']
                                     ) 
                             );
 
@@ -335,7 +335,7 @@ class HaggisTwo extends Table
                                         $card_goes_to
                                    
                                    , 'player_name' => 
-                                        $players[ $card_goes_to ]['player_name']
+                                        $players[$card_goes_to]['player_name']
                                         
                                    , 'score' => 
                                         $score
@@ -372,19 +372,19 @@ class HaggisTwo extends Table
   // Send all remaining cards + haggistwo to round winner
   function sendRemainingCardsToRoundWinner()
   {
-    $card_goes_to = self::getGameStateValue( 'lastRoundWinner' );
+    $card_goes_to = self::getGameStateValue('lastRoundWinner');
 
     // Get captured cards score
-    $handcards = $this->cards->getCardsInLocation( 'hand' );
+    $handcards = $this->cards->getCardsInLocation('hand');
     $score = self::getCardsPoints( $handcards );
-    $haggistwocards = $this->cards->getCardsInLocation( 'haggistwo' );
-    $score += self::getCardsPoints( $haggistwocards );
+    $haggistwocards = $this->cards->getCardsInLocation('haggistwo');
+    $score += self::getCardsPoints($haggistwocards);
 
     $sql = "UPDATE player
             SET player_points_captured=player_points_captured+$score
             WHERE player_id='$card_goes_to' ";
 
-    self::DbQuery( $sql );
+    self::DbQuery($sql);
 
     // All cards are captured by round winner
     $this
@@ -416,7 +416,7 @@ class HaggisTwo extends Table
                                       $card_goes_to
 
                                  , 'player_name' => 
-                                      $players[ $card_goes_to ]['player_name']
+                                      $players[$card_goes_to]['player_name']
                                  
                                  , 'score' => 
                                       $score
@@ -424,7 +424,7 @@ class HaggisTwo extends Table
                           );
   }
 
-  function resolveBets( $winner_id )
+  function resolveBets($winner_id)
   {
     // Get all bets
     $sql = "SELECT player_id, player_bet FROM player ";
@@ -437,7 +437,7 @@ class HaggisTwo extends Table
 
     foreach ($players as $player_id => $player)
     {
-      $player_bet = $bets[ $player_id ];
+      $player_bet = $bets[$player_id];
       $bNoBet = ($player_bet == null || $player_bet == 'no');
       
       if ($player_id == $winner_id) 
@@ -495,7 +495,8 @@ class HaggisTwo extends Table
         // Other player's bets
         if( !$bNoBet )
         {
-          // This player makes a bet and loose => redistribute points to "betfailtargets"
+          // This player makes a bet and loose => 
+          //    redistribute points to "betfailtargets"
           if( $player_bet=='little' )
               $points_win = 15;
           else if( $player_bet == 'big' )
@@ -584,7 +585,8 @@ class HaggisTwo extends Table
 
   function bet($bet)
   {
-    //self::checkAction( 'bet' );       // We don't check action cause it can be done when it is not your turn !
+    //self::checkAction( 'bet' );       
+    // We don't check action cause it can be done when it is not your turn !
 
     // Conditions to bet:
     // 1°) no cards play (hand = 17 cards)
@@ -595,8 +597,11 @@ class HaggisTwo extends Table
     $player_id = $g_user->get_id();
 
     $handcount = $this->cards->countCardInLocation('hand', $player_id);
+
     if ($handcount < 17)
-        throw new feException("Can't make bet: you already played some cards");
+    {
+      throw new feException("Can't make bet: you already played some cards");
+    }
 
     // 2°)
     $current_bet = 
@@ -605,30 +610,37 @@ class HaggisTwo extends Table
                                 );
 
     if ($current_bet !== null)
-        throw new feException( "Can't make bet: you already bet" );
+    { 
+      throw new feException("Can't make bet: you already bet");
+    }
 
     // Place the bet
     if ($bet == 0)
     {
       $bet_type = 'no';
-      $notify = clienttranslate( '${player_name} makes no bet' );
+      $notify = clienttranslate('${player_name} makes no bet');
     }
     else if ($bet == 15)
     {
       $bet_type = 'little';
-      $notify = clienttranslate( '${player_name} makes a little bet' );
-      self::incStat( 1, 'littlebet_number', $player_id );
+      $notify = clienttranslate('${player_name} makes a little bet');
+      self::incStat(1, 'littlebet_number', $player_id);
     }
     else if ($bet == 30)
     {
       $bet_type = 'big';
-      $notify = clienttranslate( '${player_name} makes a big bet' );
-      self::incStat( 1, 'bigbet_number', $player_id );
+      $notify = clienttranslate('${player_name} makes a big bet');
+      self::incStat(1, 'bigbet_number', $player_id);
     }
     else
-      throw new feException( "Wrong bet value" );
+    { 
+      throw new feException("Wrong bet value");
+    }
 
-    self::DbQuery( "UPDATE player SET player_bet='$bet_type' WHERE player_id='$player_id' ");
+    self::DbQuery( "UPDATE player "
+                 . "SET player_bet='$bet_type' "
+                 . "WHERE player_id='$player_id' "
+                 );
 
     // Notify
     self::notifyAllPlayers( "bet"
@@ -647,181 +659,259 @@ class HaggisTwo extends Table
                           );
   }
 
-  function playCombo( $cards_ids, $combo_id )
+  function playCombo($cards_ids, $combo_id)
   {
-    self::checkAction( 'playCombo' );
+    self::checkAction('playCombo');
     $player_id = self::getActivePlayerId();
 
-    if( count( $cards_ids ) == 0 )
-      throw new feException( self::_('No cards selected'), true );
+    if (count($cards_ids) == 0)
+    {
+      throw new feException(self::_('No cards selected'), true);
+    }
 
-    $cards = $this->cards->getCards( $cards_ids );
+    $cards = $this->cards->getCards($cards_ids);
 
-    $combos = self::analyzeCombo( $cards );
+    $combos = self::analyzeCombo($cards);
 
-    $currentComboType = self::getGameStateValue( 'combotype' );
-    $bOpeningCombination = ( $currentComboType == 0 );
+    $currentComboType = self::getGameStateValue('combotype');
+    $bOpeningCombination = ($currentComboType == 0);
 
-    if( count( $combos ) == 0 )
-      throw new feException( self::_("This is not a valid card combination. You should play a set, a sequence or a bomb"), true );
-    else if( count( $combos ) > 1 )
+    if (count($combos) == 0)
+    {
+      throw new feException( self::_( "This is not a valid card combination. "
+                                    . "You should play a set, a sequence or a bomb"
+                                    )
+                           , true 
+                           );
+    }
+    else if (count($combos) > 1)
     {
       // There is a choice between several combo
-
-      if( $combo_id === null )
+      if ($combo_id === null)
       {
         // => give player a choice
-        self::notifyPlayer( $player_id, 'multipleCombos', '', $combos );
+        self::notifyPlayer($player_id, 'multipleCombos', '', $combos);
         return;
       }
       else
       {
-        if( ! isset( $combos[ $combo_id ] ) )
-          throw new feException( "Wrong combo" );
-        $combo = $combos[ $combo_id ];
+        if (!isset($combos[$combo_id]))
+        {
+          throw new feException("Wrong combo");
+        }
+        $combo = $combos[$combo_id];
       }
     }
     else
     {
       // There is only one combo => play this one
-      $combo = reset( $combos );
+      $combo = reset($combos);
     }
 
-    $combo_type_id = self::combo_type_to_id( $combo['type'] );
+    $combo_type_id = self::combo_type_to_id($combo['type']);
 
-    if( $combo['type'] == 'bomb' )
-      self::incStat( 1, 'bomb_number', $player_id );
+    if ($combo['type'] == 'bomb')
+    {
+      self::incStat(1, 'bomb_number', $player_id);
+    }
 
-    if( ! $bOpeningCombination )
+    if (!$bOpeningCombination)
     {
       $bTrickJustBombed = false;
-      $current_combo_type = self::getGameStateValue( 'combotype' );
+      $current_combo_type = self::getGameStateValue('combotype');
       // This is not an opening combination => we must perform checks
-      if( $combo_type_id != $current_combo_type )
+      if ($combo_type_id != $current_combo_type)
       {
-        if( $combo['type'] != 'bomb' )
+        if ($combo['type'] != 'bomb')
         {
-          if( $current_combo_type == 1 )
-            throw new feException( self::_("Wrong card combination type: you should play a set or a bomb"), true );
-          else if( $current_combo_type == 2 )
-            throw new feException( self::_("Wrong card combination type: you should play a sequence or a bomb"), true );
+          if ($current_combo_type == 1)
+          {
+            throw new feException( self::_( "Wrong card combination type: you "
+                                          . "should play a set or a bomb"
+                                          )
+                                 , true 
+                                 );
+          }
+          else if ($current_combo_type == 2)
+          {
+            throw new feException( self::_( "Wrong card combination type: you "
+                                          . "should play a sequence or a bomb"
+                                          )
+                                 , true 
+                                 );
+          }
           else
-            throw new feException( self::_("Wrong card combination type: you should play a bomb"), true );
+          {
+            throw new feException( self::_( "Wrong card combination type: you "
+                                          . "should play a bomb"
+                                          )
+                                 , true 
+                                 );
+          }
         }
         else
         {
           // A bomb can be played anytime. From now only bombs can be played.
-          self::setGameStateValue( 'combotype', self::combo_type_to_id('bomb') );
+          self::setGameStateValue('combotype', self::combo_type_to_id('bomb'));
           $bTrickJustBombed = true;
         }
       }
 
-      if( $combo['type'] != 'bomb' && $combo['nbr'] != self::getGameStateValue( 'combonbr' ) )
-        throw new feException( sprintf( self::_("You must play %s cards"), self::getGameStateValue( 'combonbr' ) ), true );
-      
-      if( $combo['type'] == 'sequence' )
+      if ( $combo['type'] != 'bomb' 
+           && $combo['nbr'] != self::getGameStateValue('combonbr')
+         )
       {
-        if( $combo['serienbr'] != self::getGameStateValue( 'comboserienbr' ) )
-          throw new feException( sprintf( self::_("You must play %s sequences"), self::getGameStateValue( 'comboserienbr' ) ), true );
+        throw new feException( sprintf( self::_("You must play %s cards")
+                                      , self::getGameStateValue('combonbr') 
+                                      )
+                             , true 
+                             );
+      }
+      if ($combo['type'] == 'sequence')
+      {
+        if ($combo['serienbr'] != self::getGameStateValue('comboserienbr'))
+        {
+          throw new feException( sprintf( self::_("You must play %s sequences")
+                                        , self::getGameStateValue('comboserienbr') 
+                                        )
+                               , true 
+                               );
+        }
       }
 
-      if( $combo['value'] <= self::getGameStateValue( 'combovalue' ) )
+      if ($combo['value'] <= self::getGameStateValue('combovalue'))
       {
-        if( !$bTrickJustBombed )
-          throw new feException( self::_("You must play a higher combination than the previous one"), true );
+        if (!$bTrickJustBombed)
+          throw new feException( self::_( "You must play a higher combination "
+                                        . "than the previous one"
+                                        )
+                               , true 
+                               );
       }
 
-      self::setGameStateValue( 'combovalue', $combo['value'] );
+      self::setGameStateValue('combovalue', $combo['value']);
     }
     else
     {
       // First set
-      self::setGameStateValue( 'combotype', $combo_type_id );
-      self::setGameStateValue( 'combonbr', $combo['nbr'] );
-      self::setGameStateValue( 'comboserienbr', $combo['serienbr'] );
-      self::setGameStateValue( 'combovalue', $combo['value'] );
+      self::setGameStateValue('combotype', $combo_type_id);
+      self::setGameStateValue('combonbr', $combo['nbr']);
+      self::setGameStateValue('comboserienbr', $combo['serienbr']);
+      self::setGameStateValue('combovalue', $combo['value']);
     }
 
-    self::setGameStateValue( 'nbrPass', 0 );       // number of consecutive pass action => reset
+    self::setGameStateValue('nbrPass', 0);       // number of consecutive pass action => reset
 
-    $card_count = $this->cards->countCardsByLocationArgs( 'hand' );
-    $player_still_in_round = count( $card_count );
-    self::setGameStateValue( 'nbrPassToWin', $player_still_in_round-1 );       // number of consecutive pass action to win => reset
+    $card_count = $this->cards->countCardsByLocationArgs('hand');
+    $player_still_in_round = count($card_count);
+    self::setGameStateValue('nbrPassToWin', $player_still_in_round - 1);       // number of consecutive pass action to win => reset
 
     // From this step, player manage to play a regular combination => put this combo on the table
-    $combo_display = implode( ',', $combo['display'] );
-    self::DbQuery( "INSERT INTO combo (combo_player_id, combo_display) VALUES ('$player_id', '$combo_display') " );
+    $combo_display = implode(',', $combo['display']);
+    self::DbQuery( "INSERT INTO combo (combo_player_id, combo_display) "
+                 . "VALUES ('$player_id', '$combo_display') " 
+                 );
     $combo_no = self::DbGetLastId();
 
-    $this->cards->moveCards( $cards_ids, 'table', $combo_no );
+    $this->cards->moveCards($cards_ids, 'table', $combo_no);
 
-    $cards_number = count( $cards_ids );
+    $cards_number = count($cards_ids);
 
     $combo_description_i18n = array('combination');
-    $notification_description = clienttranslate('${player_name} plays a ${combination}');
-    $notification_args = array(
-        'i18n' => $combo_description_i18n,
-        'player_id' => $player_id,
-        'player_name' => self::getActivePlayerName(),
-        'cards' => $cards,
-        'display' => $combo['display'],
-        'combo_no' => $combo_no,
-        'combination' => $combo['type'],
-        'nbr' => $cards_number
-    );
+    
+    $notification_description = 
+        clienttranslate('${player_name} plays a ${combination}');
+    
+    $notification_args = 
+      array( 'i18n' => $combo_description_i18n
+           , 'player_id' => $player_id
+           , 'player_name' => self::getActivePlayerName()
+           , 'cards' => $cards
+           , 'display' => $combo['display']
+           , 'combo_no' => $combo_no
+           , 'combination' => $combo['type']
+           , 'nbr' => $cards_number
+           );
 
-    if( $combo['type'] == 'sequence' )
+    if ($combo['type'] == 'sequence')
     {
-      if( $combo['serienbr'] > 1 )
+      if ($combo['serienbr'] > 1)
       {
-        $notification_description = clienttranslate('${player_name} plays a sequence of ${ofakind} of a kind');
+        $notification_description = 
+          clienttranslate( '${player_name} plays a sequence'
+                         , ' of ${ofakind} of a kind'
+                         );
+        
         $notification_args['combination'] = clienttranslate('sequences');
         $notification_args['ofakind'] = $cards_number / $combo['serienbr'];
       }
     }
 
-    self::notifyAllPlayers( 'playCombo', $notification_description, $notification_args );
+    self::notifyAllPlayers( 'playCombo'
+                          , $notification_description
+                          , $notification_args
+                          );
 
-    self::setGameStateValue( 'lastComboPlayer', $player_id );
+    self::setGameStateValue('lastComboPlayer', $player_id);
 
-    if( $this->cards->countCardInLocation( 'hand', $player_id ) == 0 )
+    if ($this->cards->countCardInLocation( 'hand', $player_id ) == 0)
     {
       // This player gets out of the trick
 
       // ... scoring !
 
       // Count the number of cards in hand on opponent hands with the biggest number of cards
-      $hand_count = $this->cards->countCardsByLocationArgs( 'hand' );
-      $opponent_with_biggest = getKeyWithMaximum( $hand_count, true, false );
-      $card_number = $hand_count[ $opponent_with_biggest ];
-      $number_of_player_in_round = count( $hand_count );
+      $hand_count = $this->cards->countCardsByLocationArgs('hand');
+      $opponent_with_biggest = getKeyWithMaximum($hand_count, true, false);
+      $card_number = $hand_count[$opponent_with_biggest];
+      $number_of_player_in_round = count($hand_count);
       $players = self::loadPlayersBasicInfos();
 
-      $score = 5*$card_number;
-      self::notifyAllPlayers( 'playerGoOut', clienttranslate('${player_name} has shed the cards from his hand and gets ${score} points (5 x ${card_number} cards in the hand of ${opponent_player})'), array(
-          'player_id' => $player_id,
-          'player_name' => self::getActivePlayerName(),
-          'score' => $score,
-          'card_number' => $card_number,
-          'opponent_player' => $players[ $opponent_with_biggest ]['player_name']
-      ) );
+      $score = 5 * $card_number;
+
+      self::notifyAllPlayers( 'playerGoOut'
+                            
+                            , clienttranslate( '${player_name} has shed the '
+                                             . 'cards from his hand and gets '
+                                             . '${score} points (5 x '
+                                             . '${card_number} cards in the '
+                                             . 'hand of ${opponent_player})'
+                                             )
+                            
+                            , array( 'player_id' => 
+                                        $player_id
+                                   
+                                   , 'player_name' => 
+                                        self::getActivePlayerName()
+                            
+                                   , 'score' => 
+                                        $score
+                            
+                                   , 'card_number' => 
+                                        $card_number
+                            
+                                   , 'opponent_player' => 
+                                        $players[$opponent_with_biggest]['player_name']
+                                   ) 
+                            );
 
       $bFirstToGoOut = false;
-      if( $number_of_player_in_round == 1 && count( $players )==2 )
+
+      if ($number_of_player_in_round == 1 && count( $players )==2)
         $bFirstToGoOut = true;
-      if( $number_of_player_in_round == 2 && count( $players )==3 )
+      if ($number_of_player_in_round == 2 && count( $players )==3)
         $bFirstToGoOut = true;
 
-      if( $bFirstToGoOut )
+      if ($bFirstToGoOut)
       {
-        self::setGameStateValue( 'lastRoundWinner', $player_id );
-        self::resolveBets( $player_id );
+        self::setGameStateValue('lastRoundWinner', $player_id);
+        self::resolveBets($player_id);
       }
 
-      self::DbQuery( "UPDATE player
-                      SET player_score=player_score+$score ,
-                      player_points_remaining=player_points_remaining+$score
-                      WHERE player_id='$player_id' " );
+      self::DbQuery( "UPDATE player "
+                   . "SET player_score=player_score+$score "
+                   . "  , player_points_remaining=player_points_remaining+$score "
+                   . "WHERE player_id='$player_id' " );
     }
 
     $this->gamestate->nextState('');
@@ -843,44 +933,53 @@ class HaggisTwo extends Table
     // Shuffle and deal cards to all players
 
     // Reset "last points win" values
-    $sql = "UPDATE player SET player_points_bet='0', player_points_captured='0', player_points_remaining='0' ";
-    self::DbQuery( $sql );
+    $sql = "UPDATE player "
+         . "SET player_points_bet='0'"
+         . "  , player_points_captured='0'"
+         . "  , player_points_remaining='0' ";
+    
+    self::DbQuery($sql);
 
     // Put jacks/queens/kings in special location
-    $sql = "UPDATE card SET card_location='wildpool' WHERE card_type='wild' ";
+    $sql = "UPDATE card "
+         . "SET card_location='wildpool' "
+         . "WHERE card_type='wild' ";
+
     self::DbQuery( $sql );
 
     $this->cards->shuffle('deck');
-    self::incStat( 1, 'round_number' );
+    self::incStat(1, 'round_number');
 
     $players = self::loadPlayersBasicInfos();
-    foreach( $players as $player_id => $player )
+    
+    foreach ($players as $player_id => $player)
     {
-      $this->cards->pickCards( 14, 'deck', $player_id );
+      $this->cards->pickCards(14, 'deck', $player_id);
     }
 
     // Give one J/Q/K to each player
-    $wildcards = $this->cards->getCardsInLocation( 'wildpool' );
+    $wildcards = $this->cards->getCardsInLocation('wildpool');
     $jacks = array();
     $queens = array();
     $kings = array();
-    foreach( $wildcards as $wildcard )
+    
+    foreach ($wildcards as $wildcard)
     {
-      if( $wildcard['type_arg'] == 11 )
+      if ($wildcard['type_arg'] == 11)
         $jacks[] = $wildcard['id'];
-      if( $wildcard['type_arg'] == 12 )
+      if ($wildcard['type_arg'] == 12)
         $queens[] = $wildcard['id'];
-      if( $wildcard['type_arg'] == 13 )
+      if ($wildcard['type_arg'] == 13)
         $kings[] = $wildcard['id'];
     }
 
-    foreach( $players as $player_id => $player )
+    foreach ($players as $player_id => $player)
     {
       $cards_to_move = array();
-      $cards_to_move[] = array_pop( $jacks );
-      $cards_to_move[] = array_pop( $queens );
-      $cards_to_move[] = array_pop( $kings );
-      $this->cards->moveCards( $cards_to_move, 'hand', $player_id );
+      $cards_to_move[] = array_pop($jacks);
+      $cards_to_move[] = array_pop($queens);
+      $cards_to_move[] = array_pop($kings);
+      $this->cards->moveCards($cards_to_move, 'hand', $player_id);
       $anyplayer= $player_id;
     }
 
@@ -889,58 +988,71 @@ class HaggisTwo extends Table
     self::DbQuery( $sql );
 
     // Notify: new hand
-    self::notifyAllPlayers( 'newRound', clienttranslate('A new round starts'), array() );
+    self::notifyAllPlayers( 'newRound'
+                          , clienttranslate('A new round starts')
+                          , array()
+                          );
 
-    foreach( $players as $player_id => $player )
+    foreach($players as $player_id => $player)
     {
-      $cards = $this->cards->getCardsInLocation( 'hand', $player_id );
-      $bombcheck = self::checkBombsAmongCards( $cards );
+      $cards = $this->cards->getCardsInLocation('hand', $player_id);
+      $bombcheck = self::checkBombsAmongCards($cards);
 
-      self::notifyPlayer( $player_id, 'newDeal', '', array(
-          'cards' => $cards,
-          'bombcheck' => $bombcheck
-      ) );
+      self::notifyPlayer( $player_id
+                        , 'newDeal'
+                        , ''
+                        , array( 'cards' => $cards
+                               , 'bombcheck' => $bombcheck
+                               ) 
+                        );
 
     }
 
 
     // Get scores
-    $player_to_score = self::getCollectionFromDB( "SELECT player_id,player_score FROM player", true );
-    $min_player_id = getKeyWithMaximum( $player_to_score, false );
+    $player_to_score = 
+      self::getCollectionFromDB( "SELECT player_id,player_score "
+                               . "FROM player"
+                               
+                               , true
+                               );
+
+    $min_player_id = getKeyWithMaximum($player_to_score, false);
 
     // Dealer = leader in points. If tie: dealer = winner of the last round
     $current_dealer = self::getGameStateValue( 'dealer' );
-    if( $current_dealer == 0 )
+
+    if ($current_dealer == 0)
     {
       // First round: any player = dealer
       $dealer_id = $anyplayer;
-      self::setGameStateValue( 'dealer', $dealer_id );
+      self::setGameStateValue('dealer', $dealer_id);
     }
     else
     {
-      $dealer_id = self::getGameStateValue( 'lastTrickWinner' );
-      self::setGameStateValue( 'dealer', $dealer_id );
+      $dealer_id = self::getGameStateValue('lastTrickWinner');
+      self::setGameStateValue('dealer', $dealer_id);
     }
 
     // First player = player with fewest point. If tie: player to the left of the dealer
-    if( $min_player_id == null || $current_dealer == 0 )    // note: tie or first round
+    if ($min_player_id == null || $current_dealer == 0)    // note: tie or first round
     {
       // Tie ! => player to the left of the dealer
-      $new_active_player = self::getPlayerAfter( $dealer_id );
+      $new_active_player = self::getPlayerAfter($dealer_id);
     }
     else
     {
       $new_active_player = $min_player_id;
     }
 
-    $this->gamestate->changeActivePlayer( $new_active_player );
+    $this->gamestate->changeActivePlayer($new_active_player);
 
     // Remaining cards => haggistwo
-    $this->cards->moveAllCardsInLocation( 'deck', 'haggistwo' );
+    $this->cards->moveAllCardsInLocation('deck', 'haggistwo');
 
-    self::setGameStateValue( 'lastTrickWinner', 0 );
+    self::setGameStateValue('lastTrickWinner', 0);
 
-    $this->gamestate->nextState( '' );
+    $this->gamestate->nextState('');
   }
 
   function stNewTrick()
@@ -948,31 +1060,27 @@ class HaggisTwo extends Table
     // New trick:
     // player who wins the previous trick => active
     // if this player is out of the round => player to his left
+    $lastwinner = self::getGameStateValue('lastTrickWinner');
+    self::incStat(1, 'trick_number');
 
-    $lastwinner = self::getGameStateValue( 'lastTrickWinner' );
-    self::incStat( 1, 'trick_number' );
+    if ($lastwinner != 0)
+    {
+      $hand_count = $this->cards->countCardsByLocationArgs('hand');
 
-    if( $lastwinner == 0 )
-    {
-      // First trick of this round => keep the current active player
-    }
-    else
-    {
-      $hand_count = $this->cards->countCardsByLocationArgs( 'hand' );
-      if( isset( $hand_count[ $lastwinner ] ) )
-        $this->gamestate->changeActivePlayer( $lastwinner );
+      if (isset($hand_count[$lastwinner]))
+        $this->gamestate->changeActivePlayer($lastwinner);
       else
-        $this->gamestate->changeActivePlayer( self::getPlayerAfter( $lastwinner ) );
+        $this->gamestate->changeActivePlayer(self::getPlayerAfter($lastwinner));
     }
 
     // Reset current combo values
-    self::setGameStateValue( 'combotype', 0 );   // 0 = no combo / 1 = set / 2 = sequence / 3 = bomb
-    self::setGameStateValue( 'combonbr', 0 );         // number of cards of current combo
-    self::setGameStateValue( 'comboserienbr', 0 );    // number of series of current combo
-    self::setGameStateValue( 'combovalue', 0 );       // value of current combo
-    self::setGameStateValue( 'nbrPass', 0 );       // number of consecutive pass action
+    self::setGameStateValue('combotype', 0);   // 0 = no combo / 1 = set / 2 = sequence / 3 = bomb
+    self::setGameStateValue('combonbr', 0);         // number of cards of current combo
+    self::setGameStateValue('comboserienbr', 0);    // number of series of current combo
+    self::setGameStateValue('combovalue', 0);       // value of current combo
+    self::setGameStateValue('nbrPass', 0);       // number of consecutive pass action
 
-    self::DbQuery( "DELETE FROM combo WHERE 1" );   // Remove all combo on table
+    self::DbQuery("DELETE FROM combo WHERE 1");   // Remove all combo on table
 
     $this->gamestate->nextState( '' );
   }
@@ -985,14 +1093,14 @@ class HaggisTwo extends Table
 
     // Cards in hand.
     //  note: if a player has some cards in hand, he is still in the trick
-    $card_count = $this->cards->countCardsByLocationArgs( 'hand' );
-    $player_still_in_round = count( $card_count );
+    $card_count = $this->cards->countCardsByLocationArgs('hand');
+    $player_still_in_round = count($card_count);
 
     $nbrPassToWin = self::getGameStateValue('nbrPassToWin');
 
     $players = self::loadPlayersBasicInfos();
 
-    if( $player_still_in_round == 1 )
+    if ($player_still_in_round == 1)
     {
       // All players but one get out of the trick => end of the round
       self::endCurrentTrick();
@@ -1000,37 +1108,38 @@ class HaggisTwo extends Table
       // All remaining cards + haggistwo goes to round winner
       self::sendRemainingCardsToRoundWinner();
 
-      $this->gamestate->nextState( 'endRound' );
+      $this->gamestate->nextState('endRound');
     }
     else
     {
-      if( self::getGameStateValue( 'nbrPass' ) == $nbrPassToWin )
+      if (self::getGameStateValue('nbrPass') == $nbrPassToWin)
       {
         // All players passes except the winner of the trick
         // => end of the trick
         self::endCurrentTrick();
 
-        $this->gamestate->nextState( 'endTrick' );
+        $this->gamestate->nextState('endTrick');
       }
       else
       {
         // Continue the current trick play
         // => go to next player with cards in hand
         $current_player = self::getActivePlayerId();
-        $next_player = self::createNextPlayerTable( array_keys( $players ) );
+        $next_player = self::createNextPlayerTable(array_keys($players));
         $bContinue = true;
-        while( $bContinue )
-        {
-          $current_player = $next_player[ $current_player ];
 
-          if( isset( $card_count[ $current_player ] ) )
+        while ($bContinue)
+        {
+          $current_player = $next_player[$current_player];
+
+          if (isset($card_count[$current_player]))
           {
             // This player still have some cards in hand
             // => We found our next player
             $bContinue = false;
-            $this->gamestate->changeActivePlayer( $current_player );
-            $this->gamestate->nextState( 'nextPlayer' );
-            self::giveExtraTime( $current_player );
+            $this->gamestate->changeActivePlayer($current_player);
+            $this->gamestate->nextState('nextPlayer');
+            self::giveExtraTime($current_player);
           }
         }
       }
@@ -1040,9 +1149,15 @@ class HaggisTwo extends Table
   function testRecap()
   {
     // Build the score recap'
-    $sql = "SELECT player_id, player_score, player_points_captured, player_points_bet, player_points_remaining FROM player";
-    $recap = self::getCollectionFromDB( $sql );
-    self::notifyAllPlayers( 'scoreRecap', '', $recap );
+    $sql = "SELECT player_id"
+         . "     , player_score"
+         . "     , player_points_captured"
+         . "     , player_points_bet"
+         . "     , player_points_remaining "
+         . "FROM player";
+
+    $recap = self::getCollectionFromDB($sql);
+    self::notifyAllPlayers('scoreRecap', '', $recap);
     $this->sendNotifications();
   }
 
@@ -1051,44 +1166,71 @@ class HaggisTwo extends Table
     // End round: score remaining points
 
     // Captured points => added to score
-    $sql = "UPDATE player SET player_score=player_score+player_points_captured ";
-    self::DbQuery( $sql );
+    $sql = "UPDATE player "
+         . "SET player_score=player_score+player_points_captured ";
+
+    self::DbQuery($sql);
 
     // Build the score recap'
-    $sql = "SELECT player_id, player_score, player_points_captured, player_points_bet, player_points_remaining FROM player ";
-    $recap = self::getCollectionFromDB( $sql );
-    self::notifyAllPlayers( 'scoreRecap', '', $recap );
+    $sql = "SELECT player_id"
+         . "     , player_score"
+         . "     , player_points_captured"
+         . "     , player_points_bet"
+         . "     , player_points_remaining "
+         . "FROM player ";
+
+    $recap = self::getCollectionFromDB($sql);
+    self::notifyAllPlayers('scoreRecap', '', $recap);
 
     // Gather all cards and put them in the deck
-    $this->cards->moveAllCardsInLocation( 'hand', 'deck' );
-    $this->cards->moveAllCardsInLocation( 'captured', 'deck' );
-    $this->cards->moveAllCardsInLocation( 'table', 'deck' );
-    $this->cards->moveAllCardsInLocation( 'haggistwo', 'deck' );
+    $this->cards->moveAllCardsInLocation('hand', 'deck');
+    $this->cards->moveAllCardsInLocation('captured', 'deck');
+    $this->cards->moveAllCardsInLocation('table', 'deck');
+    $this->cards->moveAllCardsInLocation('haggistwo', 'deck');
 
 
     // If one player is above the limit (250 or 350), end the game
+    $player_to_score = 
+      self::getCollectionFromDB( "SELECT player_id"
+                               . "     , player_score "
+                               . "FROM player"
+                               
+                               , true
+                               );
 
-    $player_to_score = self::getCollectionFromDB( "SELECT player_id,player_score FROM player", true );
-    $max_score = max( $player_to_score );
+    $max_score = max($player_to_score);
 
     $limit_score = 250;
-    if( self::getGameStateValue( 'game_duration' ) == 2 )
+
+    if (self::getGameStateValue('game_duration') == 2)
+    {
       $limit_score = 350;
+    }
         
     $nbr_player_with_highest_score = 0;
-    foreach( $player_to_score as $player_id => $player_score )
+    
+    foreach ($player_to_score as $player_id => $player_score)
     {
-      if( $player_score == $max_score )
+      if ($player_score == $max_score)
+      {  
         $nbr_player_with_highest_score++;
+      }
     }
     
-    if( $nbr_player_with_highest_score > 1 )
+    if ($nbr_player_with_highest_score > 1)
+    {
       $max_score = 0;
+    }
 
-    if( $max_score >= $limit_score ) // Note: in case there is a tie, max_score is null and the game continue
-      $this->gamestate->nextState( 'endGame' );
+    // Note: in case there is a tie, max_score is null and the game continue  
+    if ($max_score >= $limit_score) 
+    {
+      $this->gamestate->nextState('endGame');
+    }
     else
-      $this->gamestate->nextState( 'newRound' );
+    {
+      $this->gamestate->nextState('newRound');
+    }
 
   }
 
@@ -1107,13 +1249,13 @@ class HaggisTwo extends Table
 //////////// Zombie
 ////////////
 
-  function zombieTurn( $state, $active_player )
+  function zombieTurn($state, $active_player)
   {
-    if( $state['name'] == 'playComboOpen' )
+    if ($state['name'] == 'playComboOpen')
     {
-      $this->gamestate->nextState( "" );
+      $this->gamestate->nextState("");
     }
-    else if( $state['name'] == 'playCombo' )
+    else if ($state['name'] == 'playCombo')
     {
       self::pass();
     }
@@ -1127,9 +1269,9 @@ class HaggisTwo extends Table
 
   function dummy()
   {
-    clienttranslate( 'set' );
-    clienttranslate( 'bomb' );
-    clienttranslate( 'sequence' );
+    clienttranslate('set');
+    clienttranslate('bomb');
+    clienttranslate('sequence');
   }
 
 }
